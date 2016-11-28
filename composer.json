@@ -9,5 +9,15 @@
             "email": "joris@label305.com"
         }
     ],
-    "require": {}
+    "autoload": {
+        "psr-4": {
+            "Itslearning\\": "src/",
+            "Tests\\": "tests/"
+        }
+    },
+    "require": {},
+    "require-dev": {
+        "phpunit/phpunit": "~4.0",
+        "vlucas/phpdotenv": "^2.4"
+    }
 }
