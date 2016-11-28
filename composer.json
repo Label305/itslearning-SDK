@@ -1,0 +1,13 @@
+{
+    "name": "label305/itslearning-sdk",
+    "description": "SDK to connect with the Organisation API and IMS-ES of itslearning",
+    "type": "library",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "Joris Blaak",
+            "email": "joris@label305.com"
+        }
+    ],
+    "require": {}
+}
