@@ -47,6 +47,8 @@ class ItslearningTest extends TestCase
 
     public function testCreateExtension()
     {
+        $this->skipInCi();
+        
         /* Given */
         $itslearning = $this->getInstance();
 

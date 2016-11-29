@@ -6,6 +6,7 @@ namespace Itslearning\Client;
 
 use Itslearning\Exceptions\ItslearningException;
 use Itslearning\Exceptions\RequestException;
+use Itslearning\Exceptions\TimeoutException;
 use Itslearning\Util\XmlHelper;
 
 class ItslearningSoapClient extends \SoapClient implements ItslearningClient
@@ -15,6 +16,11 @@ class ItslearningSoapClient extends \SoapClient implements ItslearningClient
     const CODE_MAJOR_FAILURE = 'failure';
 
     const MESSAGE_STATUS_TYPE_ERROR = 'Error';
+
+    /**
+     * Timeout after which the request will abort
+     */
+    const TIMEOUT = 60000;
 
     /**
      * @param string $method
@@ -106,9 +112,15 @@ class ItslearningSoapClient extends \SoapClient implements ItslearningClient
             throw new RequestException('No MessageId in response');
         }
 
+        $start = microtime(true);
+
         /* Exponential back-off implementation */
         $delay = 100;
         do {
+            if ((microtime(true) - $start) * 1000 > self::TIMEOUT) {
+                throw new TimeoutException('Request timed out');
+            }
+
             usleep($delay);
             $delay *= 2;
 
@@ -128,7 +140,6 @@ class ItslearningSoapClient extends \SoapClient implements ItslearningClient
                 throw new RequestException('Error from queued AddMessage request: ' . $status->GetMessageResultResult->StatusDetails->DataMessageStatusDetail->Message);
             }
 
-            //TODO add timeout
         } while ($status->GetMessageResultResult->Status == self::STATUS_INQUEUE);
 
         return $status;
