@@ -10,7 +10,7 @@ use Itslearning\Requests\Request;
 
 class CreateExtensionInstanceRequest implements Request
 {
-    const MESSAGE_TYPE_NAME = 'Create.ExtensionInstance.Instance';
+    const MESSAGE_TYPE_NAME = 'Create.Extension.Instance';
     /**
      * @var ExtensionInstance
      */

@@ -10,7 +10,7 @@ use Itslearning\Requests\Request;
 
 class UpdateExtensionInstanceRequest implements Request
 {
-    const MESSAGE_TYPE_NAME = 'Update.ExtensionInstance.Instance';
+    const MESSAGE_TYPE_NAME = 'Update.Extension.Instance';
     /**
      * @var ExtensionInstance
      */
