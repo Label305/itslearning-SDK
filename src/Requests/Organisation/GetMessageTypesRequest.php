@@ -22,7 +22,10 @@ class GetMessageTypesRequest implements Request
         $arguments = [];
         $result = $client->call(self::METHOD, $arguments);
 
-        if (!isset($result->GetMessageTypesResult->DataMessageType)) {
+        if (
+            !isset($result->GetMessageTypesResult->DataMessageType)
+            || !is_array($result->GetMessageTypesResult->DataMessageType)
+        ) {
             throw new RequestException('Invalid response for GetMessageTypes request');
         }
 

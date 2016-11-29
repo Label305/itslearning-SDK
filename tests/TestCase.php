@@ -12,12 +12,19 @@ class TestCase extends \PHPUnit_Framework_TestCase
 {
 
 
+    /**
+     * @var \Faker\Generator
+     */
+    protected $faker;
+
     public function setUp()
     {
         parent::setUp();
 
         $dotenv = new Dotenv(__DIR__);
         $dotenv->load();
+
+        $this->faker = \Faker\Factory::create();
     }
 
     /**
@@ -63,7 +70,8 @@ class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return string
      */
-    public function getCourseSyncKey():string {
+    public function getCourseSyncKey():string
+    {
         return getenv('COURSE_SYNC_KEY');
     }
 

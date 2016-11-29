@@ -64,8 +64,8 @@ class CreateCourseRequest implements Request
                     ],
                     'description' => [
                         'descShort' => $this->course->getShortDescription(),
-                        'descLong' => $this->course->getShortDescription(),
-                        'descFull' => $this->course->getShortDescription()
+                        'descLong' => $this->course->getLongDescription(),
+                        'descFull' => $this->course->getFullDescription()
                     ],
                     'extension' => [
                         'extensionField' => [
