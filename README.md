@@ -1,6 +1,8 @@
 Itslearning PHP SDK
 ===================
 
+[![Build Status](https://travis-ci.org/Label305/itslearning-SDK.svg?branch=master)](https://travis-ci.org/Label305/itslearning-SDK)
+
 SDK to connect with the Organisation API and IMS-ES of itslearning
 
 __Work in progress!__

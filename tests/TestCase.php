@@ -5,6 +5,7 @@ namespace Tests;
 
 
 use Dotenv\Dotenv;
+use Dotenv\Exception\InvalidPathException;
 use Itslearning\Itslearning;
 use Itslearning\ItslearningCredentials;
 
@@ -21,8 +22,12 @@ class TestCase extends \PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $dotenv = new Dotenv(__DIR__);
-        $dotenv->load();
+        try {
+            $dotenv = new Dotenv(__DIR__);
+            $dotenv->load();
+        } catch (InvalidPathException $e) {
+            /* Meh */
+        }
 
         $this->faker = \Faker\Factory::create();
     }
