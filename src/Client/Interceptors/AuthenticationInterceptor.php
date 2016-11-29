@@ -1,8 +1,7 @@
 <?php
 
-namespace Itslearning\Interceptors;
+namespace Itslearning\Client\Interceptors;
 
-use Itslearning\Interceptor;
 use SoapHeader;
 use SoapVar;
 use stdClass;

@@ -30,7 +30,27 @@ class Course
     /**
      * @var string
      */
-    private $shortDescription;
+    private $shortDescription = '';
+
+    /**
+     * @var string
+     */
+    private $longDescription = '';
+
+    /**
+     * @var string
+     */
+    private $fullDescription = '';
+
+    /**
+     * @var string
+     */
+    private $code = '';
+
+    /**
+     * @var string
+     */
+    private $credits = '';
 
     /**
      * @return string
@@ -99,7 +119,7 @@ class Course
     /**
      * @return string
      */
-    public function getShortDescription()
+    public function getShortDescription():string
     {
         return $this->shortDescription;
     }
@@ -110,6 +130,70 @@ class Course
     public function setShortDescription(string $shortDescription)
     {
         $this->shortDescription = $shortDescription;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLongDescription(): string
+    {
+        return $this->longDescription;
+    }
+
+    /**
+     * @param string $longDescription
+     */
+    public function setLongDescription(string $longDescription)
+    {
+        $this->longDescription = $longDescription;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFullDescription(): string
+    {
+        return $this->fullDescription;
+    }
+
+    /**
+     * @param string $fullDescription
+     */
+    public function setFullDescription(string $fullDescription)
+    {
+        $this->fullDescription = $fullDescription;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCode(): string
+    {
+        return $this->code;
+    }
+
+    /**
+     * @param string $code
+     */
+    public function setCode(string $code)
+    {
+        $this->code = $code;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCredits(): string
+    {
+        return $this->credits;
+    }
+
+    /**
+     * @param string $credits
+     */
+    public function setCredits(string $credits)
+    {
+        $this->credits = $credits;
     }
 
 }

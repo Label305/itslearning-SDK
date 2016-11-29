@@ -1,14 +1,14 @@
 <?php
 
 
-namespace Itslearning\Interceptors;
+namespace Itslearning\Client\Interceptors;
 
 
+use Itslearning\Client\ItslearningSoapClient;
 use Itslearning\Exceptions\AuthenticationException;
 use Itslearning\ItslearningCredentials;
-use Itslearning\ItslearningSoapClient;
 
-class OrganisationAuthenticationInterceptor extends AuthenticationInterceptor
+class ImsesAuthenticationInterceptor extends AuthenticationInterceptor
 {
     /**
      * @var ItslearningCredentials
@@ -30,11 +30,11 @@ class OrganisationAuthenticationInterceptor extends AuthenticationInterceptor
      */
     public function handle(ItslearningSoapClient $client):ItslearningSoapClient
     {
-        $username = $this->credentials->getOrganisationLogin();
-        $password = $this->credentials->getOrganisationPassword();
+        $username = $this->credentials->getImsesLogin();
+        $password = $this->credentials->getImsesPassword();
 
         if (empty($username) || empty($password)) {
-            throw new AuthenticationException('No Organisation Api credentials set');
+            throw new AuthenticationException('No Imses credentials set');
         }
 
         $header = $this->toHeader($username, $password);

@@ -18,7 +18,7 @@ class ItslearningTest extends TestCase
         $itslearning = $this->getInstance();
 
         /* When */
-        $result = $itslearning->getMessageTypeIdentifier('Update.Extension.Instance');
+        $result = $itslearning->findMessageTypeIdentifierByName('Update.Extension.Instance');
 
         /* Then */
         $this->assertEquals(54, $result);

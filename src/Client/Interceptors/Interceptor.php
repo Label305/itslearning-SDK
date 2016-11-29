@@ -1,8 +1,10 @@
 <?php
 
 
-namespace Itslearning;
+namespace Itslearning\Client\Interceptors;
 
+
+use Itslearning\Client\ItslearningSoapClient;
 
 interface Interceptor
 {

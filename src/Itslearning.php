@@ -2,12 +2,16 @@
 
 namespace Itslearning;
 
+use Itslearning\Client\ClientFactory;
+use Itslearning\Client\SoapClientFactory;
 use Itslearning\Exceptions\MessageTypeNotFoundException;
-use Itslearning\Interceptors\ImsesAuthenticationInterceptor;
-use Itslearning\Interceptors\OrganisationAuthenticationInterceptor;
 use Itslearning\Objects\Imses\Course;
 use Itslearning\Objects\Organisation\Extension;
 use Itslearning\Objects\Organisation\MessageType;
+use Itslearning\Requests\Imses\CreateGroupRequest;
+use Itslearning\Requests\Organisation\CreateExtensionInstanceRequest;
+use Itslearning\Requests\Organisation\GetMessageTypesRequest;
+use Itslearning\Requests\Organisation\UpdateExtensionInstanceRequest;
 
 class Itslearning
 {
@@ -17,17 +21,26 @@ class Itslearning
     private $credentials;
 
     /**
-     * @var array
+     * @var MessageType[]|null
      */
     private $messageTypes;
 
     /**
+     * @var ClientFactory
+     */
+    private $clientFactory;
+
+    /**
      * Itslearning constructor.
      * @param ItslearningCredentials $credentials
+     * @param ClientFactory          $clientFactory
      */
-    public function __construct(ItslearningCredentials $credentials)
-    {
+    public function __construct(
+        ItslearningCredentials $credentials,
+        ClientFactory $clientFactory = null
+    ) {
         $this->credentials = $credentials;
+        $this->clientFactory = $clientFactory === null ? new SoapClientFactory() : $clientFactory;
     }
 
     /**
@@ -35,21 +48,15 @@ class Itslearning
      * @return int
      * @throws MessageTypeNotFoundException
      */
-    public function getMessageTypeIdentifier(string $name):int
+    public function findMessageTypeIdentifierByName(string $name):int
     {
         if (empty($this->messageTypes)) {
-            $client = ItslearningSoapClient::builder()
-                ->addInterceptor(new OrganisationAuthenticationInterceptor($this->credentials))
-                ->organisation();
-
-            $arguments = [];
-            $result = $client->__soapCall('GetMessageTypes', $arguments);
-            $this->messageTypes = $result->GetMessageTypesResult->DataMessageType;
+            $this->messageTypes = $this->getMessageTypes();
         }
 
         foreach ($this->messageTypes as $type) {
-            if ($type->Name == $name) {
-                return $type->Identifier;
+            if ($type->getName() === $name) {
+                return $type->getIdentifier();
             }
         }
 
@@ -57,161 +64,59 @@ class Itslearning
     }
 
     /**
+     * @return MessageType[]
+     */
+    public function getMessageTypes():array
+    {
+        $client = $this->clientFactory->organisation($this->credentials);
+
+        $request = new GetMessageTypesRequest();
+
+        return $request->execute($client);
+    }
+
+    /**
+     * @link http://developer.itslearning.com/createGroup.html
      * @param Course $course
      * @return Course
      */
     public function createCourse(Course $course):Course
     {
-        $client = ItslearningSoapClient::builder()
-            ->addInterceptor(new ImsesAuthenticationInterceptor($this->credentials))
-            ->imses();
+        $client = $this->clientFactory->imses($this->credentials);
 
-        $arguments = [
-            [
-                'sourcedId' => [
-                    'identifier' => $course->getSyncKey()
-                ],
-                'group' => [
-                    'groupType' => [
-                        'scheme' => 'ItsLearningOrganisationTypes',
-                        'typeValue' => [
-                            'type' => 'Course'
-                        ]
-                    ],
-                    'relationship' => [
-                        'relation' => 'Parent',
-                        'sourceId' => [
-                            'identifier' => $course->getParentSyncKey()
-                        ]
-                    ],
-                    'description' => [
-                        'descShort' => $course->getShortDescription()
-                    ],
-                    'extension' => [
-                        'extensionField' => [
-                            [
-                                'fieldName' => 'course',
-                                'fieldType' => 'String',
-                                'fieldValue' => $course->getName()
-                            ],
-                            [
-                                'fieldName' => 'course/code',
-                                'fieldType' => 'String',
-                                'fieldValue' => ''
-                            ],
-                            [
-                                'fieldName' => 'course/credits',
-                                'fieldType' => 'String',
-                                'fieldValue' => ''
-                            ]
-                        ]
-                    ]
-                ]
-            ]
-        ];
+        $request = new CreateGroupRequest($course);
 
-        $client->__soapCall('createGroup', $arguments);
-
-        return $course;
+        return $request->execute($client);
     }
 
     /**
-     * http://developer.itslearning.com/Create.Extension.Instance.html
-     *
+     * @link http://developer.itslearning.com/Create.Extension.Instance.html
      * @param Extension $extension
      * @return Extension
      */
     public function createExtension(Extension $extension):Extension
     {
-        $client = ItslearningSoapClient::builder()
-            ->addInterceptor(new OrganisationAuthenticationInterceptor($this->credentials))
-            ->organisation();
+        $client = $this->clientFactory->organisation($this->credentials);
 
-        $data = [
-            'Message' => [
-                'xmlns:' => 'urn:message-schema',
-                'SyncKeys' => [
-                    'SyncKey' => $extension->getSyncKey()
-                ],
-                'CreateExtensionInstance' => [
-                    'Location' => $extension->getLocation(),
-                    'ExtensionId' => $extension->getExtensionId(),
-                    'CourseSyncKey' => $extension->getCourseSyncKey(),
-                    'UserSyncKey' => $extension->getUserSyncKey(),
-                    'Title' => $extension->getTitle(),
-                    'Metadata' => [
-                        'Description' => $extension->getDescription(),
-                        'Language' => $extension->getLanguage(),
-                        'Keywords' => [
-                            'Keyword' => $extension->getKeywords()
-                        ],
-                        'IntendedEndUserRole' => $extension->getIntendedEndUserRole(),
-                    ],
-                    'Content' => [
-                        'FileLinkContent' => [
-                            'Description' => $extension->getTitle(),
-                            'HideLink' => false,
-                            'Link' => $extension->getContent()
-                        ]
-                    ]
-                ]
-            ]
-        ];
+        $messageTypeIdentifier = $this->findMessageTypeIdentifierByName(CreateExtensionInstanceRequest::MESSAGE_TYPE_NAME);
+        $request = new CreateExtensionInstanceRequest($extension, $messageTypeIdentifier);
 
-        $result = $client->addMessage(
-            $this->getMessageTypeIdentifier('Create.Extension.Instance'),
-            $data
-        );
-
-        if (isset($result->GetMessageResultResult->StatusDetails->DataMessageStatusDetail->SyncKey)) {
-            $extension->setSyncKey($result->GetMessageResultResult->StatusDetails->DataMessageStatusDetail->SyncKey);
-        }
-
-        return $extension;
+        return $request->execute($client);
     }
 
     /**
+     * @link http://developer.itslearning.com/Update.Extension.Instance.html
      * @param Extension $extension
      * @return Extension
      */
     public function updateExtension(Extension $extension):Extension
     {
-        $client = ItslearningSoapClient::builder()
-            ->addInterceptor(new OrganisationAuthenticationInterceptor($this->credentials))
-            ->organisation();
+        $client = $this->clientFactory->organisation($this->credentials);
 
-        $data = [
-            'Message' => [
-                'xmlns:' => 'urn:message-schema',
-                'UpdateExtensionInstance' => [
-                    'ContentSyncKey' => $extension->getSyncKey(),
-                    'UserSyncKey' => $extension->getUserSyncKey(),
-                    'Title' => $extension->getTitle(),
-                    'Metadata' => [
-                        'Description' => $extension->getDescription(),
-                        'Language' => $extension->getLanguage(),
-                        'Keywords' => [
-                            'Keyword' => $extension->getKeywords()
-                        ],
-                        'IntendedEndUserRole' => $extension->getIntendedEndUserRole(),
-                    ],
-                    'Content' => [
-                        'FileLinkContent' => [
-                            'Description' => $extension->getTitle(),
-                            'HideLink' => false,
-                            'Link' => $extension->getContent()
-                        ]
-                    ]
-                ]
-            ]
-        ];
+        $messageTypeIdentifier = $this->findMessageTypeIdentifierByName(UpdateExtensionInstanceRequest::MESSAGE_TYPE_NAME);
+        $request = new UpdateExtensionInstanceRequest($extension, $messageTypeIdentifier);
 
-        $client->addMessage(
-            $this->getMessageTypeIdentifier('Update.Extension.Instance'),
-            $data
-        );
-
-        return $extension;
+        return $request->execute($client);
     }
 
 }

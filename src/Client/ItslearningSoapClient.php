@@ -1,19 +1,50 @@
 <?php
 
 
-namespace Itslearning;
+namespace Itslearning\Client;
 
 
 use Itslearning\Exceptions\ItslearningException;
 use Itslearning\Exceptions\RequestException;
+use Itslearning\Util\XmlHelper;
 
-class ItslearningSoapClient extends \SoapClient
+class ItslearningSoapClient extends \SoapClient implements ItslearningClient
 {
     const STATUS_INQUEUE = 'InQueue';
 
     const CODE_MAJOR_FAILURE = 'failure';
 
     const MESSAGE_STATUS_TYPE_ERROR = 'Error';
+
+    /**
+     * @param string $method
+     * @param array  $arguments
+     */
+    public function call(string $method, array $arguments)
+    {
+        return $this->__soapCall($method, $arguments);
+    }
+
+    /**
+     * @param string $type
+     * @param array  $data
+     * @throws ItslearningException
+     */
+    public function message(string $type, array $data)
+    {
+        $dom = XmlHelper::fromArray($data);
+
+        $arguments = [
+            'dataMessage' => [
+                'Data' => $dom->saveXML(),
+                'Type' => $type
+            ]
+        ];
+
+        $result = $this->call('AddMessage', [$arguments]);
+
+        return $this->fetchResultForQueuedRequest($result);
+    }
 
     /**
      * @param string $function_name
@@ -46,35 +77,6 @@ class ItslearningSoapClient extends \SoapClient
         } catch (\SoapFault $e) {
             throw new RequestException($e->getMessage(), $e->getCode(), $e);
         }
-    }
-
-    /**
-     * @param string $type
-     * @param array  $data
-     * @throws ItslearningException
-     */
-    public function addMessage(string $type, array $data)
-    {
-        $dom = XmlHelper::fromArray($data);
-
-        $arguments = [
-            'dataMessage' => [
-                'Data' => $dom->saveXML(),
-                'Type' => $type
-            ]
-        ];
-
-        $result = $this->__soapCall('AddMessage', [$arguments]);
-
-        return $this->fetchResultForQueuedRequest($result);
-    }
-
-    /**
-     * @return Builder
-     */
-    public static function builder():Builder
-    {
-        return new Builder();
     }
 
     /**
@@ -131,6 +133,5 @@ class ItslearningSoapClient extends \SoapClient
 
         return $status;
     }
-
 
 }

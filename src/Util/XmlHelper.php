@@ -1,5 +1,5 @@
 <?php
-namespace Itslearning;
+namespace Itslearning\Util;
 
 use DOMDocument;
 use DOMNode;

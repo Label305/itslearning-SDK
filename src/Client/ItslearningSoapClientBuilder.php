@@ -1,10 +1,12 @@
 <?php
 
 
-namespace Itslearning;
+namespace Itslearning\Client;
 
 
-class Builder
+use Itslearning\Client\Interceptors\Interceptor;
+
+class ItslearningSoapClientBuilder
 {
 
     /**
@@ -18,7 +20,7 @@ class Builder
     /**
      * @param Interceptor $interceptor
      */
-    public function addInterceptor(Interceptor $interceptor):Builder
+    public function addInterceptor(Interceptor $interceptor):ItslearningSoapClientBuilder
     {
         $this->interceptors[] = $interceptor;
 
