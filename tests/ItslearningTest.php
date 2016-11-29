@@ -5,7 +5,7 @@ namespace Tests;
 
 
 use Itslearning\Objects\Imses\Course;
-use Itslearning\Objects\Organisation\Extension;
+use Itslearning\Objects\Organisation\ExtensionInstance;
 
 class ItslearningTest extends TestCase
 {
@@ -18,7 +18,7 @@ class ItslearningTest extends TestCase
         $itslearning = $this->getInstance();
 
         /* When */
-        $result = $itslearning->findMessageTypeIdentifierByName('Update.Extension.Instance');
+        $result = $itslearning->findMessageTypeIdentifierByName('Update.ExtensionInstance.Instance');
 
         /* Then */
         $this->assertEquals(54, $result);
@@ -50,17 +50,17 @@ class ItslearningTest extends TestCase
         /* Given */
         $itslearning = $this->getInstance();
 
-        $extension = new Extension();
-        $extension->setSyncKey('SDKTEST' . time());
-        $extension->setLocation('Library');
-        $extension->setExtensionId(5000);//Should be 5010
-        $extension->setCourseSyncKey($this->getCourseSyncKey());
-        $extension->setUserSyncKey($this->getUserSyncKey());
-        $extension->setTitle('Sdk - TEST');
-        $extension->setContent('http://www.label305.com');
+        $extensionInstance = new ExtensionInstance();
+        $extensionInstance->setSyncKey('SDKTEST' . time());
+        $extensionInstance->setLocation('Library');
+        $extensionInstance->setExtensionId(5000);//Should be 5010
+        $extensionInstance->setCourseSyncKey($this->getCourseSyncKey());
+        $extensionInstance->setUserSyncKey($this->getUserSyncKey());
+        $extensionInstance->setTitle('Sdk - TEST');
+        $extensionInstance->setContent('http://www.label305.com');
 
         /* When */
-        $itslearning->createExtension($extension);
+        $itslearning->createExtension($extensionInstance);
         /* Then */
         //plz no crash
     }

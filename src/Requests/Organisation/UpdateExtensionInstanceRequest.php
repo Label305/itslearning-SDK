@@ -5,16 +5,16 @@ namespace Itslearning\Requests\Organisation;
 
 
 use Itslearning\Client\ItslearningClient;
-use Itslearning\Objects\Organisation\Extension;
+use Itslearning\Objects\Organisation\ExtensionInstance;
 use Itslearning\Requests\Request;
 
 class UpdateExtensionInstanceRequest implements Request
 {
-    const MESSAGE_TYPE_NAME = 'Update.Extension.Instance';
+    const MESSAGE_TYPE_NAME = 'Update.ExtensionInstance.Instance';
     /**
-     * @var Extension
+     * @var ExtensionInstance
      */
-    private $extension;
+    private $extensionInstance;
     /**
      * @var int
      */
@@ -22,12 +22,12 @@ class UpdateExtensionInstanceRequest implements Request
 
     /**
      * UpdateExtensionInstanceRequest constructor.
-     * @param Extension $extension
-     * @param int       $messageTypeIdentifier
+     * @param ExtensionInstance $extensionInstance
+     * @param int               $messageTypeIdentifier
      */
-    public function __construct(Extension $extension, int $messageTypeIdentifier)
+    public function __construct(ExtensionInstance $extensionInstance, int $messageTypeIdentifier)
     {
-        $this->extension = $extension;
+        $this->extensionInstance = $extensionInstance;
         $this->messageTypeIdentifier = $messageTypeIdentifier;
     }
 
@@ -37,18 +37,16 @@ class UpdateExtensionInstanceRequest implements Request
      */
     public function execute(ItslearningClient $client)
     {
-        $extension = $this->extension;
-
-        $data = $this->map($extension);
+        $data = $this->map($this->extensionInstance);
 
         return $client->message($this->messageTypeIdentifier, $data);
     }
 
     /**
-     * @param Extension $extension
+     * @param ExtensionInstance $extension
      * @return array
      */
-    protected function map(Extension $extension):array
+    protected function map(ExtensionInstance $extension):array
     {
         $data = [
             'Message' => [

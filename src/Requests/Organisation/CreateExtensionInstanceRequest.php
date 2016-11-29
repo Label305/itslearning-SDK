@@ -5,16 +5,16 @@ namespace Itslearning\Requests\Organisation;
 
 
 use Itslearning\Client\ItslearningClient;
-use Itslearning\Objects\Organisation\Extension;
+use Itslearning\Objects\Organisation\ExtensionInstance;
 use Itslearning\Requests\Request;
 
 class CreateExtensionInstanceRequest implements Request
 {
-    const MESSAGE_TYPE_NAME = 'Create.Extension.Instance';
+    const MESSAGE_TYPE_NAME = 'Create.ExtensionInstance.Instance';
     /**
-     * @var Extension
+     * @var ExtensionInstance
      */
-    private $extension;
+    private $extensionInstance;
     /**
      * @var int
      */
@@ -22,23 +22,22 @@ class CreateExtensionInstanceRequest implements Request
 
     /**
      * CreateExtensionInstanceRequest constructor.
-     * @param Extension $extension
-     * @param int       $messageTypeIdentifier
+     * @param ExtensionInstance $extensionInstance
+     * @param int               $messageTypeIdentifier
      */
-    public function __construct(Extension $extension, int $messageTypeIdentifier)
+    public function __construct(ExtensionInstance $extensionInstance, int $messageTypeIdentifier)
     {
-        $this->extension = $extension;
+        $this->extensionInstance = $extensionInstance;
         $this->messageTypeIdentifier = $messageTypeIdentifier;
     }
 
-
     /**
      * @param ItslearningClient $client
-     * @return Extension
+     * @return ExtensionInstance
      */
-    public function execute(ItslearningClient $client):Extension
+    public function execute(ItslearningClient $client):ExtensionInstance
     {
-        $data = $this->map();
+        $data = $this->map($this->extensionInstance);
 
         $result = $client->message($this->messageTypeIdentifier, $data);
 
@@ -48,33 +47,33 @@ class CreateExtensionInstanceRequest implements Request
     /**
      * @return array
      */
-    protected function map():array
+    protected function map(ExtensionInstance $extensionInstance):array
     {
         $data = [
             'Message' => [
                 'xmlns:' => 'urn:message-schema',
                 'SyncKeys' => [
-                    'SyncKey' => $this->extension->getSyncKey()
+                    'SyncKey' => $extensionInstance->getSyncKey()
                 ],
                 'CreateExtensionInstance' => [
-                    'Location' => $this->extension->getLocation(),
-                    'ExtensionId' => $this->extension->getExtensionId(),
-                    'CourseSyncKey' => $this->extension->getCourseSyncKey(),
-                    'UserSyncKey' => $this->extension->getUserSyncKey(),
-                    'Title' => $this->extension->getTitle(),
+                    'Location' => $extensionInstance->getLocation(),
+                    'ExtensionId' => $extensionInstance->getExtensionId(),
+                    'CourseSyncKey' => $extensionInstance->getCourseSyncKey(),
+                    'UserSyncKey' => $extensionInstance->getUserSyncKey(),
+                    'Title' => $extensionInstance->getTitle(),
                     'Metadata' => [
-                        'Description' => $this->extension->getDescription(),
-                        'Language' => $this->extension->getLanguage(),
+                        'Description' => $extensionInstance->getDescription(),
+                        'Language' => $extensionInstance->getLanguage(),
                         'Keywords' => [
-                            'Keyword' => $this->extension->getKeywords()
+                            'Keyword' => $extensionInstance->getKeywords()
                         ],
-                        'IntendedEndUserRole' => $this->extension->getIntendedEndUserRole(),
+                        'IntendedEndUserRole' => $extensionInstance->getIntendedEndUserRole(),
                     ],
                     'Content' => [
                         'FileLinkContent' => [
-                            'Description' => $this->extension->getTitle(),
+                            'Description' => $extensionInstance->getTitle(),
                             'HideLink' => false,
-                            'Link' => $this->extension->getContent()
+                            'Link' => $extensionInstance->getContent()
                         ]
                     ]
                 ]
@@ -86,14 +85,14 @@ class CreateExtensionInstanceRequest implements Request
 
     /**
      * @param $result
-     * @return Extension
+     * @return ExtensionInstance
      */
-    protected function transform($result):Extension
+    protected function transform($result):ExtensionInstance
     {
         if (isset($result->GetMessageResultResult->StatusDetails->DataMessageStatusDetail->SyncKey)) {
-            $this->extension->setSyncKey($result->GetMessageResultResult->StatusDetails->DataMessageStatusDetail->SyncKey);
+            $this->extensionInstance->setSyncKey($result->GetMessageResultResult->StatusDetails->DataMessageStatusDetail->SyncKey);
         }
 
-        return $this->extension;
+        return $this->extensionInstance;
     }
 }

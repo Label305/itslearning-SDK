@@ -8,7 +8,7 @@ use Itslearning\Client\ItslearningClient;
 use Itslearning\Objects\Imses\Course;
 use Itslearning\Requests\Request;
 
-class CreateGroupRequest implements Request
+class CreateCourseRequest implements Request
 {
     const METHOD = 'createGroup';
 
@@ -18,7 +18,7 @@ class CreateGroupRequest implements Request
     private $course;
 
     /**
-     * CreateGroupRequest constructor.
+     * CreateCourseRequest constructor.
      * @param Course $course
      */
     public function __construct(Course $course)

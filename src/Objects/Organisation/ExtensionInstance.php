@@ -4,7 +4,7 @@
 namespace Itslearning\Objects\Organisation;
 
 
-class Extension
+class ExtensionInstance
 {
 
     /**
