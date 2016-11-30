@@ -28,7 +28,7 @@ class ItslearningSoapClientTest extends TestCase
         ];
 
         /* Then */
-        $soapClient->shouldReceive('__soapCall')->with($method, $arguments);
+        $soapClient->shouldReceive('__soapCall')->with($method, $arguments, null, null, null);
 
         /* When */
         $itslearningSoapClient->call($method, $arguments);
@@ -62,7 +62,8 @@ class ItslearningSoapClientTest extends TestCase
                 ]
             ]
         ];
-        $soapClient->shouldReceive('__soapCall')->times(1)->with('AddMessage', $message)->andReturn((object)[
+        $soapClient->shouldReceive('__soapCall')->times(1)->with('AddMessage', $message, null, null,
+            null)->andReturn((object)[
             'AddMessageResult' => (object)[
                 'MessageId' => 1337
             ]
@@ -73,17 +74,18 @@ class ItslearningSoapClientTest extends TestCase
                 'messageId' => 1337
             ]
         ];
-        $soapClient->shouldReceive('__soapCall')->times(1)->with('GetMessageResult',
-            $messageResultArgument)->andReturn((object)[
-            'GetMessageResultResult' => (object)[
-                'Status' => ItslearningSoapClient::STATUS_FINISHED,
-                'StatusDetails' => (object)[
-                    'DataMessageStatusDetail' => (object)[
-                        'Type' => ItslearningSoapClient::MESSAGE_STATUS_TYPE_INFO
+        $soapClient->shouldReceive('__soapCall')->times(1)
+            ->with('GetMessageResult', $messageResultArgument, null, null, null)
+            ->andReturn((object)[
+                'GetMessageResultResult' => (object)[
+                    'Status' => ItslearningSoapClient::STATUS_FINISHED,
+                    'StatusDetails' => (object)[
+                        'DataMessageStatusDetail' => (object)[
+                            'Type' => ItslearningSoapClient::MESSAGE_STATUS_TYPE_INFO
+                        ]
                     ]
                 ]
-            ]
-        ]);
+            ]);
 
         /* When */
         $itslearningSoapClient->message($type, $data);
@@ -117,45 +119,49 @@ class ItslearningSoapClientTest extends TestCase
                 ]
             ]
         ];
-        $soapClient->shouldReceive('__soapCall')->times(1)->with('AddMessage', $message)->andReturn((object)[
-            'AddMessageResult' => (object)[
-                'MessageId' => 1337
-            ]
-        ]);
+        $soapClient->shouldReceive('__soapCall')->times(1)
+            ->with('AddMessage', $message, null, null, null)
+            ->andReturn((object)[
+                'AddMessageResult' => (object)[
+                    'MessageId' => 1337
+                ]
+            ]);
 
         $messageResultArgument = [
             [
                 'messageId' => 1337
             ]
         ];
-        $soapClient->shouldReceive('__soapCall')->times(1)->with('GetMessageResult',
-            $messageResultArgument)->andReturn((object)[
-            'GetMessageResultResult' => (object)[
-                'Status' => ItslearningSoapClient::STATUS_INQUEUE,
-                'StatusDetails' => (object)[
-                    'DataMessageStatusDetail' => (object)[
-                        'Type' => ItslearningSoapClient::MESSAGE_STATUS_TYPE_INFO
+        $soapClient->shouldReceive('__soapCall')->times(1)
+            ->with('GetMessageResult', $messageResultArgument, null, null, null)
+            ->andReturn((object)[
+                'GetMessageResultResult' => (object)[
+                    'Status' => ItslearningSoapClient::STATUS_INQUEUE,
+                    'StatusDetails' => (object)[
+                        'DataMessageStatusDetail' => (object)[
+                            'Type' => ItslearningSoapClient::MESSAGE_STATUS_TYPE_INFO
+                        ]
                     ]
                 ]
-            ]
-        ]);
+            ]);
 
         $messageResultArgument = [
             [
                 'messageId' => 1337
             ]
         ];
-        $soapClient->shouldReceive('__soapCall')->times(1)->with('GetMessageResult',
-            $messageResultArgument)->andReturn((object)[
-            'GetMessageResultResult' => (object)[
-                'Status' => ItslearningSoapClient::STATUS_FINISHED,
-                'StatusDetails' => (object)[
-                    'DataMessageStatusDetail' => (object)[
-                        'Type' => ItslearningSoapClient::MESSAGE_STATUS_TYPE_INFO
+        $soapClient->shouldReceive('__soapCall')->times(1)
+            ->with('GetMessageResult', $messageResultArgument, null, null, null)
+            ->andReturn((object)[
+                'GetMessageResultResult' => (object)[
+                    'Status' => ItslearningSoapClient::STATUS_FINISHED,
+                    'StatusDetails' => (object)[
+                        'DataMessageStatusDetail' => (object)[
+                            'Type' => ItslearningSoapClient::MESSAGE_STATUS_TYPE_INFO
+                        ]
                     ]
                 ]
-            ]
-        ]);
+            ]);
 
         /* When */
         $itslearningSoapClient->message($type, $data);

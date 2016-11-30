@@ -6,11 +6,13 @@ use Itslearning\Client\ClientFactory;
 use Itslearning\Client\SoapClientFactory;
 use Itslearning\Exceptions\MessageTypeNotFoundException;
 use Itslearning\Objects\Imses\Course;
+use Itslearning\Objects\Imses\Person;
 use Itslearning\Objects\Organisation\ExtensionInstance;
 use Itslearning\Objects\Organisation\MessageType;
 use Itslearning\Objects\PaginatedResponse;
 use Itslearning\Requests\Imses\CreateCourseRequest;
 use Itslearning\Requests\Imses\ReadAllPersonsRequest;
+use Itslearning\Requests\Imses\ReadPersonRequest;
 use Itslearning\Requests\Organisation\CreateExtensionInstanceRequest;
 use Itslearning\Requests\Organisation\GetMessageTypesRequest;
 use Itslearning\Requests\Organisation\UpdateExtensionInstanceRequest;
@@ -125,7 +127,7 @@ class Itslearning
     }
 
     /**
-     * http://developer.itslearning.com/readAllPersons.html
+     * @link http://developer.itslearning.com/readAllPersons.html
      * @param int  $pageIndex
      * @param int  $pageSize
      * @param null $createdFrom
@@ -149,6 +151,20 @@ class Itslearning
             $onlyManuallyCreatedUsers,
             $convertFromManual
         );
+
+        return $request->execute($client);
+    }
+
+    /**
+     * @link http://developer.itslearning.com/readPerson.html
+     * @param string $syncID
+     * @return Person
+     */
+    public function readPerson(string $syncID): Person
+    {
+        $client = $this->clientFactory->imses($this->credentials);
+
+        $request = new ReadPersonRequest($syncID);
 
         return $request->execute($client);
     }

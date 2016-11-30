@@ -80,4 +80,18 @@ class ItslearningTest extends TestCase
         /* Then */
         $this->assertCount(3, $persons->getData());
     }
+
+    public function testReadPerson()
+    {
+        $this->skipInCi();
+
+        /* Given */
+        $itslearning = $this->getInstance();
+
+        /* When */
+        $person = $itslearning->readPerson('20150109-system-admin-label306');
+
+        /* Then */
+        $this->assertEquals('Label 305', $person->getName()->getFirst());
+    }
 }

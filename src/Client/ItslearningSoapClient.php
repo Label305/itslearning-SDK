@@ -45,7 +45,7 @@ class ItslearningSoapClient implements ItslearningClient
     public function call(string $method, array $arguments)
     {
         try {
-            $result = $this->soapClient->__soapCall($method, $arguments);
+            $result = $this->soapClient->__soapCall($method, $arguments, null, null, $output_headers);
 
             $this->throwErrors($output_headers);
 
