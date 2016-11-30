@@ -48,7 +48,7 @@ class ItslearningTest extends TestCase
     public function testCreateExtension()
     {
         $this->skipInCi();
-        
+
         /* Given */
         $itslearning = $this->getInstance();
 
@@ -65,5 +65,19 @@ class ItslearningTest extends TestCase
         $itslearning->createExtension($extensionInstance);
         /* Then */
         //plz no crash
+    }
+
+    public function testReadAllPersons()
+    {
+        $this->skipInCi();
+
+        /* Given */
+        $itslearning = $this->getInstance();
+
+        /* When */
+        $persons = $itslearning->readAllPersons(1, 3);
+
+        /* Then */
+        $this->assertCount(3, $persons->getData());
     }
 }

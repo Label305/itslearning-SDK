@@ -8,7 +8,9 @@ use Itslearning\Exceptions\MessageTypeNotFoundException;
 use Itslearning\Objects\Imses\Course;
 use Itslearning\Objects\Organisation\ExtensionInstance;
 use Itslearning\Objects\Organisation\MessageType;
+use Itslearning\Objects\PaginatedResponse;
 use Itslearning\Requests\Imses\CreateCourseRequest;
+use Itslearning\Requests\Imses\ReadAllPersonsRequest;
 use Itslearning\Requests\Organisation\CreateExtensionInstanceRequest;
 use Itslearning\Requests\Organisation\GetMessageTypesRequest;
 use Itslearning\Requests\Organisation\UpdateExtensionInstanceRequest;
@@ -50,7 +52,7 @@ class Itslearning
      * @param Course $course
      * @return Course
      */
-    public function createCourse(Course $course):Course
+    public function createCourse(Course $course): Course
     {
         $client = $this->clientFactory->imses($this->credentials);
 
@@ -64,7 +66,7 @@ class Itslearning
      * @param ExtensionInstance $extensionInstance
      * @return ExtensionInstance
      */
-    public function createExtension(ExtensionInstance $extensionInstance):ExtensionInstance
+    public function createExtension(ExtensionInstance $extensionInstance): ExtensionInstance
     {
         $client = $this->clientFactory->organisation($this->credentials);
 
@@ -79,7 +81,7 @@ class Itslearning
      * @param ExtensionInstance $extensionInstance
      * @return ExtensionInstance
      */
-    public function updateExtension(ExtensionInstance $extensionInstance):ExtensionInstance
+    public function updateExtension(ExtensionInstance $extensionInstance): ExtensionInstance
     {
         $client = $this->clientFactory->organisation($this->credentials);
 
@@ -93,7 +95,7 @@ class Itslearning
      * @link http://developer.itslearning.com/DataService.svc_methods_and_messages.html
      * @return MessageType[]
      */
-    public function getMessageTypes():array
+    public function getMessageTypes(): array
     {
         $client = $this->clientFactory->organisation($this->credentials);
 
@@ -107,7 +109,7 @@ class Itslearning
      * @return int
      * @throws MessageTypeNotFoundException
      */
-    public function findMessageTypeIdentifierByName(string $name):int
+    public function findMessageTypeIdentifierByName(string $name): int
     {
         if (empty($this->messageTypes)) {
             $this->messageTypes = $this->getMessageTypes();
@@ -120,6 +122,35 @@ class Itslearning
         }
 
         throw new MessageTypeNotFoundException('Message type "' . $name . '" not found');
+    }
+
+    /**
+     * http://developer.itslearning.com/readAllPersons.html
+     * @param int  $pageIndex
+     * @param int  $pageSize
+     * @param null $createdFrom
+     * @param bool $onlyManuallyCreatedUsers
+     * @param bool $convertFromManual
+     * @return PaginatedResponse
+     */
+    public function readAllPersons(
+        int $pageIndex = 1,
+        int $pageSize = 1,
+        $createdFrom = null,
+        bool $onlyManuallyCreatedUsers = false,
+        bool $convertFromManual = false
+    ): PaginatedResponse {
+        $client = $this->clientFactory->imses($this->credentials);
+
+        $request = new ReadAllPersonsRequest(
+            $pageIndex,
+            $pageSize,
+            $createdFrom,
+            $onlyManuallyCreatedUsers,
+            $convertFromManual
+        );
+
+        return $request->execute($client);
     }
 
 }
