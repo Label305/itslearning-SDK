@@ -3,9 +3,9 @@
 
 namespace Itslearning\Client\Interceptors;
 
-use Itslearning\Client\ItslearningSoapClient;
 use Itslearning\Exceptions\AuthenticationException;
 use Itslearning\ItslearningCredentials;
+use SoapClient;
 
 class OrganisationAuthenticationInterceptor extends AuthenticationInterceptor
 {
@@ -24,10 +24,10 @@ class OrganisationAuthenticationInterceptor extends AuthenticationInterceptor
     }
 
     /**
-     * @param ItslearningSoapClient $client
-     * @return ItslearningSoapClient
+     * @param SoapClient $client
+     * @return SoapClient
      */
-    public function handle(ItslearningSoapClient $client):ItslearningSoapClient
+    public function handle(SoapClient $client):SoapClient
     {
         $username = $this->credentials->getOrganisationLogin();
         $password = $this->credentials->getOrganisationPassword();

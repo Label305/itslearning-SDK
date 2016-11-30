@@ -4,15 +4,15 @@
 namespace Itslearning\Client\Interceptors;
 
 
-use Itslearning\Client\ItslearningSoapClient;
+use SoapClient;
 
 interface Interceptor
 {
 
     /**
-     * @param ItslearningSoapClient $client
-     * @return ItslearningSoapClient
+     * @param SoapClient $client
+     * @return SoapClient
      */
-    public function handle(ItslearningSoapClient $client):ItslearningSoapClient;
+    public function handle(SoapClient $client):SoapClient;
 
 }

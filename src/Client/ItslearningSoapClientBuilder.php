@@ -49,14 +49,16 @@ class ItslearningSoapClientBuilder
      */
     private function build(string $wsdl):ItslearningSoapClient
     {
-        $client = new ItslearningSoapClient($wsdl, [
+        $soapClient = new \SoapClient($wsdl, [
             'cache_wsdl' => WSDL_CACHE_NONE,
             'trace' => true
         ]);
-
+        
         foreach ($this->interceptors as $interceptor) {
-            $client = $interceptor->handle($client);
+            $soapClient = $interceptor->handle($soapClient);
         }
+
+        $client = new ItslearningSoapClient($soapClient);
 
         return $client;
     }

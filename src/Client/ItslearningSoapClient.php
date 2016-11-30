@@ -9,18 +9,34 @@ use Itslearning\Exceptions\RequestException;
 use Itslearning\Exceptions\TimeoutException;
 use Itslearning\Util\XmlHelper;
 
-class ItslearningSoapClient extends \SoapClient implements ItslearningClient
+class ItslearningSoapClient implements ItslearningClient
 {
     const STATUS_INQUEUE = 'InQueue';
+    const STATUS_FINISHED = 'Finished';
 
     const CODE_MAJOR_FAILURE = 'failure';
 
+    const MESSAGE_STATUS_TYPE_INFO = 'Info';
     const MESSAGE_STATUS_TYPE_ERROR = 'Error';
+
 
     /**
      * Timeout after which the request will abort
      */
     const TIMEOUT = 60000;
+    /**
+     * @var \SoapClient
+     */
+    private $soapClient;
+
+    /**
+     * ItslearningSoapClient constructor.
+     * @param \SoapClient $soapClient
+     */
+    public function __construct(\SoapClient $soapClient)
+    {
+        $this->soapClient = $soapClient;
+    }
 
     /**
      * @param string $method
@@ -28,7 +44,15 @@ class ItslearningSoapClient extends \SoapClient implements ItslearningClient
      */
     public function call(string $method, array $arguments)
     {
-        return $this->__soapCall($method, $arguments);
+        try {
+            $result = $this->soapClient->__soapCall($method, $arguments);
+
+            $this->throwErrors($output_headers);
+
+            return $result;
+        } catch (\SoapFault $e) {
+            throw new RequestException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     /**
@@ -50,39 +74,6 @@ class ItslearningSoapClient extends \SoapClient implements ItslearningClient
         $result = $this->call('AddMessage', [$arguments]);
 
         return $this->fetchResultForQueuedRequest($result);
-    }
-
-    /**
-     * @param string $function_name
-     * @param array  $arguments
-     * @param null   $options
-     * @param null   $input_headers
-     * @param null   $output_headers
-     * @return mixed
-     * @throws RequestException
-     */
-    public function __soapCall(
-        $function_name,
-        $arguments,
-        $options = null,
-        $input_headers = null,
-        &$output_headers = null
-    ) {
-        try {
-            $result = parent::__soapCall(
-                $function_name,
-                $arguments,
-                $options,
-                $input_headers,
-                $output_headers
-            );
-
-            $this->throwErrors($output_headers);
-
-            return $result;
-        } catch (\SoapFault $e) {
-            throw new RequestException($e->getMessage(), $e->getCode(), $e);
-        }
     }
 
     /**
@@ -124,7 +115,7 @@ class ItslearningSoapClient extends \SoapClient implements ItslearningClient
             usleep($delay);
             $delay *= 2;
 
-            $status = $this->__soapCall(
+            $status = $this->call(
                 'GetMessageResult',
                 [
                     [
@@ -133,11 +124,19 @@ class ItslearningSoapClient extends \SoapClient implements ItslearningClient
                 ]
             );
             if (
-                $status->GetMessageResultResult->Status != self::STATUS_INQUEUE
-                && isset($status->GetMessageResultResult->StatusDetails->DataMessageStatusDetail->Type)
-                && $status->GetMessageResultResult->StatusDetails->DataMessageStatusDetail->Type == self::MESSAGE_STATUS_TYPE_ERROR
+                !isset($status->GetMessageResultResult->Status)
+                || (
+                    $status->GetMessageResultResult->Status != self::STATUS_INQUEUE
+                    && isset($status->GetMessageResultResult->StatusDetails->DataMessageStatusDetail->Type)
+                    && $status->GetMessageResultResult->StatusDetails->DataMessageStatusDetail->Type == self::MESSAGE_STATUS_TYPE_ERROR
+                )
             ) {
-                throw new RequestException('Error from queued AddMessage request: ' . $status->GetMessageResultResult->StatusDetails->DataMessageStatusDetail->Message);
+                if (isset($status->GetMessageResultResult->StatusDetails->DataMessageStatusDetail->Message)) {
+                    $str = 'Error from queued AddMessage request: ' . $status->GetMessageResultResult->StatusDetails->DataMessageStatusDetail->Message;
+                } else {
+                    $str = 'An error occured from queued AddMessage request without DataMessageStatusDetail';
+                }
+                throw new RequestException($str);
             }
 
         } while ($status->GetMessageResultResult->Status == self::STATUS_INQUEUE);
