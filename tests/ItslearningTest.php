@@ -75,10 +75,10 @@ class ItslearningTest extends TestCase
         $itslearning = $this->getInstance();
 
         /* When */
-        $persons = $itslearning->readAllPersons(1, 3);
+        $persons = $itslearning->readAllPersons(1, 10);
 
         /* Then */
-        $this->assertCount(3, $persons->getData());
+        $this->assertCount(10, $persons->getData());
     }
 
     public function testReadPerson()
@@ -93,5 +93,24 @@ class ItslearningTest extends TestCase
 
         /* Then */
         $this->assertEquals('Label 305', $person->getName()->getFirst());
+    }
+
+    public function testReadPersons()
+    {
+        $this->skipInCi();
+
+        /* Given */
+        $itslearning = $this->getInstance();
+
+        /* When */
+        $persons = $itslearning->readPersons([
+            '20150109-system-admin-label306',
+            '137996'
+        ]);
+
+        /* Then */
+        $this->assertCount(2, $persons);
+        $this->assertEquals('Label 305', $persons[0]->getName()->getFirst());
+        $this->assertEquals('Mohammad', $persons[1]->getName()->getFirst());
     }
 }

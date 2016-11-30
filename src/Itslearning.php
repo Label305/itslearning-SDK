@@ -13,6 +13,7 @@ use Itslearning\Objects\PaginatedResponse;
 use Itslearning\Requests\Imses\CreateCourseRequest;
 use Itslearning\Requests\Imses\ReadAllPersonsRequest;
 use Itslearning\Requests\Imses\ReadPersonRequest;
+use Itslearning\Requests\Imses\ReadPersonsRequest;
 use Itslearning\Requests\Organisation\CreateExtensionInstanceRequest;
 use Itslearning\Requests\Organisation\GetMessageTypesRequest;
 use Itslearning\Requests\Organisation\UpdateExtensionInstanceRequest;
@@ -165,6 +166,19 @@ class Itslearning
         $client = $this->clientFactory->imses($this->credentials);
 
         $request = new ReadPersonRequest($syncID);
+
+        return $request->execute($client);
+    }
+
+    /**
+     * @param $syncIDs
+     * @return Person[]
+     */
+    public function readPersons($syncIDs): array
+    {
+        $client = $this->clientFactory->imses($this->credentials);
+
+        $request = new ReadPersonsRequest($syncIDs);
 
         return $request->execute($client);
     }

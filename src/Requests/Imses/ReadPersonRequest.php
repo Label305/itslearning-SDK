@@ -55,7 +55,7 @@ class ReadPersonRequest implements Request
     private function transform($result)
     {
         if (!isset($result->person)) {
-            throw new RequestException('No personIdPair in readAllpersions response');
+            throw new RequestException('No person in readPerson response');
         }
 
         $person = new Person();
