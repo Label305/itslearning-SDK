@@ -8,6 +8,7 @@ use Itslearning\Client\ItslearningClient;
 use Itslearning\Exceptions\RequestException;
 use Itslearning\Objects\Imses\Person;
 use Itslearning\Objects\Imses\PersonName;
+use Itslearning\Requests\Imses\Transformers\PersonTransformer;
 use Itslearning\Requests\Request;
 
 class ReadPersonRequest implements Request
@@ -58,24 +59,6 @@ class ReadPersonRequest implements Request
             throw new RequestException('No person in readPerson response');
         }
 
-        $person = new Person();
-
-        $personName = new PersonName();
-        foreach ($result->person->name->partName as $partName) {
-            if ($partName->namePartType === 'First') {
-                $personName->setFirst($partName->namePartValue);
-            }
-            if ($partName->namePartType === 'Last') {
-                $personName->setLast($partName->namePartValue);
-            }
-            if ($partName->namePartType === 'Nick') {
-                $personName->setNick($partName->namePartValue);
-            }
-        }
-        $person->setName($personName);
-
-        $person->setEmail($result->person->email);
-
-        return $person;
+        return PersonTransformer::fromResponse($result->person);
     }
 }

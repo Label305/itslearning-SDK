@@ -10,6 +10,7 @@ use Itslearning\Exceptions\RequestException;
 use Itslearning\Objects\Imses\Person;
 use Itslearning\Objects\Imses\PersonName;
 use Itslearning\Objects\PaginatedResponse;
+use Itslearning\Requests\Imses\Transformers\PersonTransformer;
 use Itslearning\Requests\Request;
 
 class ReadAllPersonsRequest implements Request
@@ -110,25 +111,7 @@ class ReadAllPersonsRequest implements Request
 
         $persons = [];
         foreach ($result->personIdPairSet->personIdPair as $personIdPair) {
-            $person = new Person();
-
-            $personName = new PersonName();
-            foreach ($personIdPair->person->name->partName as $partName) {
-                if ($partName->namePartType === 'First') {
-                    $personName->setFirst($partName->namePartValue);
-                }
-                if ($partName->namePartType === 'Last') {
-                    $personName->setLast($partName->namePartValue);
-                }
-                if ($partName->namePartType === 'Nick') {
-                    $personName->setNick($partName->namePartValue);
-                }
-            }
-            $person->setName($personName);
-
-            $person->setEmail($personIdPair->person->email);
-
-            $persons[] = $person;
+            $persons[]= PersonTransformer::fromResponse($personIdPair->person);
         }
 
         return $persons;
