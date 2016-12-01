@@ -32,7 +32,7 @@ class ItslearningTest extends TestCase
         $itslearning = $this->getInstance();
 
         $course = new Course();
-        $course->setName(date('Y-m-d H:i:s') . ' - SDKTest test');
+        $course->setTitle(date('Y-m-d H:i:s') . ' - SDKTest test');
         $course->setShortDescription('SDKTest course');
         $course->setParentSyncKey($this->getHierarchySyncKey());
         $course->setSyncKey('SDKTEST' . date('YmdHis'));
@@ -112,5 +112,19 @@ class ItslearningTest extends TestCase
         $this->assertCount(2, $persons);
         $this->assertEquals('Label 305', $persons[0]->getName()->getFirst());
         $this->assertEquals('Mohammad', $persons[1]->getName()->getFirst());
+    }
+
+    public function testReadCourses()
+    {
+        $this->skipInCi();
+
+        /* Given */
+        $itslearning = $this->getInstance();
+
+        /* When */
+        $result = $itslearning->readCourses(0, 3);
+
+        /* Then */
+        $this->assertCount(3, $result->getData());
     }
 }

@@ -20,7 +20,7 @@ class SpyItslearningClient implements ItslearningClient
     {
         $this->callMethod = $method;
         $this->callArguments = $arguments;
-        
+
         return $this->callResponse;
     }
 
@@ -28,7 +28,7 @@ class SpyItslearningClient implements ItslearningClient
     {
         $this->messageType = $type;
         $this->messageData = $data;
-        
+
         return $this->messageResponse;
     }
 }

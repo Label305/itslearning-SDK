@@ -16,6 +16,7 @@ use Itslearning\Requests\Imses\ReadPersonRequest;
 use Itslearning\Requests\Imses\ReadPersonsRequest;
 use Itslearning\Requests\Organisation\CreateExtensionInstanceRequest;
 use Itslearning\Requests\Organisation\GetMessageTypesRequest;
+use Itslearning\Requests\Organisation\ReadCoursesRequest;
 use Itslearning\Requests\Organisation\UpdateExtensionInstanceRequest;
 
 class Itslearning
@@ -71,7 +72,7 @@ class Itslearning
      */
     public function createExtension(ExtensionInstance $extensionInstance): ExtensionInstance
     {
-        $client = $this->clientFactory->organisation($this->credentials);
+        $client = $this->clientFactory->organisationData($this->credentials);
 
         $messageTypeIdentifier = $this->findMessageTypeIdentifierByName(CreateExtensionInstanceRequest::MESSAGE_TYPE_NAME);
         $request = new CreateExtensionInstanceRequest($extensionInstance, $messageTypeIdentifier);
@@ -86,7 +87,7 @@ class Itslearning
      */
     public function updateExtension(ExtensionInstance $extensionInstance): ExtensionInstance
     {
-        $client = $this->clientFactory->organisation($this->credentials);
+        $client = $this->clientFactory->organisationData($this->credentials);
 
         $messageTypeIdentifier = $this->findMessageTypeIdentifierByName(UpdateExtensionInstanceRequest::MESSAGE_TYPE_NAME);
         $request = new UpdateExtensionInstanceRequest($extensionInstance, $messageTypeIdentifier);
@@ -100,7 +101,7 @@ class Itslearning
      */
     public function getMessageTypes(): array
     {
-        $client = $this->clientFactory->organisation($this->credentials);
+        $client = $this->clientFactory->organisationData($this->credentials);
 
         $request = new GetMessageTypesRequest();
 
@@ -183,4 +184,16 @@ class Itslearning
         return $request->execute($client);
     }
 
+    /**
+     * @link http://developer.itslearning.com/Read.Courses.html
+     * @return PaginatedResponse
+     */
+    public function readCourses(int $pageIndex = 0, int $pageSize = 1000)
+    {
+        $client = $this->clientFactory->organisationReadData($this->credentials);
+
+        $request = new ReadCoursesRequest($pageIndex, $pageSize);
+
+        return $request->execute($client);
+    }
 }

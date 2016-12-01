@@ -16,7 +16,7 @@ class CreateCourseRequestTest extends TestCase
     {
         /* Given */
         $course = new Course();
-        $course->setName('MyName');
+        $course->setTitle('MyName');
         $course->setSyncKey('MySyncKey');
         $course->setParentSyncKey('MyParentSyncKey');
         $course->setUserSyncKey('MyUserSyncKey');

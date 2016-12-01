@@ -72,7 +72,7 @@ class CreateCourseRequest implements Request
                             [
                                 'fieldName' => 'course',
                                 'fieldType' => 'String',
-                                'fieldValue' => $this->course->getName()
+                                'fieldValue' => $this->course->getTitle()
                             ],
                             [
                                 'fieldName' => 'course/code',

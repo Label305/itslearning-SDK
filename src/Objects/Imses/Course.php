@@ -10,7 +10,12 @@ class Course
     /**
      * @var string
      */
-    private $name;
+    private $id;
+
+    /**
+     * @var string
+     */
+    private $title;
 
     /**
      * @var string
@@ -30,42 +35,58 @@ class Course
     /**
      * @var string
      */
-    private $shortDescription = '';
+    private $shortDescription;
 
     /**
      * @var string
      */
-    private $longDescription = '';
+    private $longDescription;
 
     /**
      * @var string
      */
-    private $fullDescription = '';
+    private $fullDescription;
 
     /**
      * @var string
      */
-    private $code = '';
+    private $code;
 
     /**
      * @var string
      */
-    private $credits = '';
+    private $credits;
 
     /**
      * @return string
      */
-    public function getName()
+    public function getId(): string
     {
-        return $this->name;
+        return $this->id ?? '';
     }
 
     /**
-     * @param string $name
+     * @param string $id
      */
-    public function setName(string $name)
+    public function setId(string $id)
     {
-        $this->name = $name;
+        $this->id = $id;
+    }
+    
+    /**
+     * @return string
+     */
+    public function getTitle():string
+    {
+        return $this->title ?? '';
+    }
+
+    /**
+     * @param string $title
+     */
+    public function setTitle(string $title)
+    {
+        $this->title = $title;
     }
 
     /**
@@ -121,7 +142,7 @@ class Course
      */
     public function getShortDescription():string
     {
-        return $this->shortDescription;
+        return $this->shortDescription ?? '';
     }
 
     /**
@@ -137,7 +158,7 @@ class Course
      */
     public function getLongDescription(): string
     {
-        return $this->longDescription;
+        return $this->longDescription ?? '';
     }
 
     /**
@@ -153,7 +174,7 @@ class Course
      */
     public function getFullDescription(): string
     {
-        return $this->fullDescription;
+        return $this->fullDescription ?? '';
     }
 
     /**
@@ -169,7 +190,7 @@ class Course
      */
     public function getCode(): string
     {
-        return $this->code;
+        return $this->code ?? '';
     }
 
     /**
@@ -185,7 +206,7 @@ class Course
      */
     public function getCredits(): string
     {
-        return $this->credits;
+        return $this->credits ?? '';
     }
 
     /**
