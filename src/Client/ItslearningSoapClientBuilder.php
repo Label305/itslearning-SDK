@@ -14,9 +14,19 @@ class ItslearningSoapClientBuilder
      */
     private $interceptors = [];
 
-    const ORGANISATION_DATA_WSDL = 'https://migra.itslearning.com/ContentImport/DataService.svc?wsdl';
-    const ORGANISATION_READ_DATA_WSDL = 'https://migra.itslearning.com/ContentImport/ReadDataService.svc?wsdl';
-    const IMSES_WSDL = 'https://enterprise.itslearning.com/WCFServiceLibrary/ImsEnterpriseServicesPort.svc?wsdl';
+    /**
+     * @var ServiceProvider
+     */
+    private $serviceProvider;
+
+    /**
+     * ItslearningSoapClientBuilder constructor.
+     * @param string|null $env
+     */
+    public function __construct(string $env = null)
+    {
+        $this->serviceProvider = new ServiceProvider($env);
+    }
 
     /**
      * @param Interceptor $interceptor
@@ -33,7 +43,7 @@ class ItslearningSoapClientBuilder
      */
     public function imses(): ItslearningSoapClient
     {
-        return $this->build(self::IMSES_WSDL);
+        return $this->build($this->serviceProvider->getImsesWsdlUrl());
     }
 
     /**
@@ -41,7 +51,7 @@ class ItslearningSoapClientBuilder
      */
     public function organisationData(): ItslearningSoapClient
     {
-        return $this->build(self::ORGANISATION_DATA_WSDL);
+        return $this->build($this->serviceProvider->getOrganisationDataWsdlUrl());
     }
 
     /**
@@ -49,7 +59,7 @@ class ItslearningSoapClientBuilder
      */
     public function organisationReadData(): ItslearningSoapClient
     {
-        return $this->build(self::ORGANISATION_READ_DATA_WSDL);
+        return $this->build($this->serviceProvider->getOrganisationReadDataWsdlUrl());
     }
 
     /**
@@ -58,7 +68,16 @@ class ItslearningSoapClientBuilder
      */
     private function build(string $wsdl): ItslearningSoapClient
     {
+        $context = stream_context_create([
+            'ssl' => [
+                'verify_peer' => !$this->serviceProvider->isTesting(),
+                'verify_peer_name' => !$this->serviceProvider->isTesting(),
+                'allow_self_signed' => $this->serviceProvider->isTesting()
+            ]
+        ]);
+
         $soapClient = new \SoapClient($wsdl, [
+            'stream_context' => $context,
             'cache_wsdl' => WSDL_CACHE_NONE,
             'trace' => true
         ]);

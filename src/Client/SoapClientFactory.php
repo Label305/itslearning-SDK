@@ -11,24 +11,49 @@ use Itslearning\ItslearningCredentials;
 
 class SoapClientFactory implements ClientFactory
 {
+    /**
+     * @var string
+     */
+    private $env;
 
-    public function imses(ItslearningCredentials $credentials):ItslearningClient
+    /**
+     * SoapClientFactory constructor.
+     * @param string $env
+     */
+    public function __construct(string $env = null)
     {
-        return (new ItslearningSoapClientBuilder())
+        $this->env = $env;
+    }
+
+    /**
+     * @param ItslearningCredentials $credentials
+     * @return ItslearningClient
+     */
+    public function imses(ItslearningCredentials $credentials): ItslearningClient
+    {
+        return (new ItslearningSoapClientBuilder($this->env))
             ->addInterceptor(new ImsesAuthenticationInterceptor($credentials))
             ->imses();
     }
 
-    public function organisationData(ItslearningCredentials $credentials):ItslearningClient
+    /**
+     * @param ItslearningCredentials $credentials
+     * @return ItslearningClient
+     */
+    public function organisationData(ItslearningCredentials $credentials): ItslearningClient
     {
-        return (new ItslearningSoapClientBuilder())
+        return (new ItslearningSoapClientBuilder($this->env))
             ->addInterceptor(new OrganisationAuthenticationInterceptor($credentials))
             ->organisationData();
     }
-    
-    public function organisationReadData(ItslearningCredentials $credentials):ItslearningClient
+
+    /**
+     * @param ItslearningCredentials $credentials
+     * @return ItslearningClient
+     */
+    public function organisationReadData(ItslearningCredentials $credentials): ItslearningClient
     {
-        return (new ItslearningSoapClientBuilder())
+        return (new ItslearningSoapClientBuilder($this->env))
             ->addInterceptor(new OrganisationAuthenticationInterceptor($credentials))
             ->organisationReadData();
     }

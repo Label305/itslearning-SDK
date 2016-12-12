@@ -21,6 +21,10 @@ use Itslearning\Requests\Organisation\UpdateExtensionInstanceRequest;
 
 class Itslearning
 {
+
+    const PRODUCTION = 'production';
+    const TESTING = 'testing';
+
     /**
      * @var ItslearningCredentials
      */
@@ -43,10 +47,12 @@ class Itslearning
      */
     public function __construct(
         ItslearningCredentials $credentials,
-        ClientFactory $clientFactory = null
+        ClientFactory $clientFactory = null,
+        string $env = null
     ) {
         $this->credentials = $credentials;
-        $this->clientFactory = $clientFactory === null ? new SoapClientFactory() : $clientFactory;
+        $this->env = $env === null ? self::PRODUCTION : $env;
+        $this->clientFactory = $clientFactory === null ? new SoapClientFactory($env) : $clientFactory;
     }
 
     /**
