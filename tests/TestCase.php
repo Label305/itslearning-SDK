@@ -67,6 +67,14 @@ class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * @return string
      */
+    public function getOtherUserSyncKey():string
+    {
+        return getenv('OTHER_USER_SYNC_KEY');
+    }
+
+    /**
+     * @return string
+     */
     public function getHierarchySyncKey():string
     {
         return getenv('HIERARCHY_SYNC_KEY');

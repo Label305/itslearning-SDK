@@ -111,7 +111,9 @@ class ReadAllPersonsRequest implements Request
 
         $persons = [];
         foreach ($result->personIdPairSet->personIdPair as $personIdPair) {
-            $persons[]= PersonTransformer::fromResponse($personIdPair->person);
+            $person = PersonTransformer::fromResponse($personIdPair->person);
+            $person->setUserId($personIdPair->sourcedId->identifier);
+            $persons[]= $person;
         }
 
         return $persons;

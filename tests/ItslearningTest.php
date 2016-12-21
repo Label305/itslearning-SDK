@@ -40,7 +40,7 @@ class ItslearningTest extends TestCase
 
         /* When */
         $itslearning->createCourse($course);
-
+       
         /* Then */
         //plz no crash
     }
@@ -89,10 +89,10 @@ class ItslearningTest extends TestCase
         $itslearning = $this->getInstance();
 
         /* When */
-        $person = $itslearning->readPerson('20150109-system-admin-label306');
+        $person = $itslearning->readPerson($this->getOtherUserSyncKey());
 
         /* Then */
-        $this->assertEquals('Label 305', $person->getName()->getFirst());
+        $this->assertNotNull($person->getName()->getFirst());
     }
 
     public function testReadPersons()
@@ -104,14 +104,12 @@ class ItslearningTest extends TestCase
 
         /* When */
         $persons = $itslearning->readPersons([
-            '20150109-system-admin-label306',
-            '137996'
+            $this->getUserSyncKey(),
+            $this->getOtherUserSyncKey()
         ]);
 
         /* Then */
         $this->assertCount(2, $persons);
-        $this->assertEquals('Label 305', $persons[0]->getName()->getFirst());
-        $this->assertEquals('Mohammad', $persons[1]->getName()->getFirst());
     }
 
     public function testReadCourses()
