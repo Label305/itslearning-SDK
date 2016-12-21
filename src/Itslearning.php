@@ -7,6 +7,7 @@ use Itslearning\Client\SoapClientFactory;
 use Itslearning\Exceptions\MessageTypeNotFoundException;
 use Itslearning\Objects\Imses\Course;
 use Itslearning\Objects\Imses\Person;
+use Itslearning\Objects\Organisation\CoursePlanner;
 use Itslearning\Objects\Organisation\ExtensionInstance;
 use Itslearning\Objects\Organisation\MessageType;
 use Itslearning\Objects\PaginatedResponse;
@@ -14,6 +15,7 @@ use Itslearning\Requests\Imses\CreateCourseRequest;
 use Itslearning\Requests\Imses\ReadAllPersonsRequest;
 use Itslearning\Requests\Imses\ReadPersonRequest;
 use Itslearning\Requests\Imses\ReadPersonsRequest;
+use Itslearning\Requests\Organisation\CreateCoursePlannerRequest;
 use Itslearning\Requests\Organisation\CreateExtensionInstanceRequest;
 use Itslearning\Requests\Organisation\GetMessageTypesRequest;
 use Itslearning\Requests\Organisation\ReadCoursesRequest;
@@ -67,6 +69,21 @@ class Itslearning
         $client = $this->clientFactory->imses($this->credentials);
 
         $request = new CreateCourseRequest($course);
+
+        return $request->execute($client);
+    }
+
+    /**
+     * @link http://developer.itslearning.com/Create.Course.Planner.html
+     * @param CoursePlanner $coursePlanner
+     * @return CoursePlanner
+     */
+    public function createCoursePlanner(CoursePlanner $coursePlanner): CoursePlanner
+    {
+        $client = $this->clientFactory->organisationData($this->credentials);
+
+        $messageTypeIdentifier = $this->findMessageTypeIdentifierByName(CreateCoursePlannerRequest::MESSAGE_TYPE_NAME);
+        $request = new CreateCoursePlannerRequest($coursePlanner, $messageTypeIdentifier);
 
         return $request->execute($client);
     }

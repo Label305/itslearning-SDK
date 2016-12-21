@@ -35,7 +35,6 @@ class ReadCoursesRequest implements Request
         $this->pageSize = $pageSize;
     }
 
-
     /**
      * @param ItslearningClient $client
      * @return PaginatedResponse

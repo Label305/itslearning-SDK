@@ -4,8 +4,14 @@
 namespace Tests;
 
 
+use Itslearning\Exceptions\ItslearningException;
 use Itslearning\Objects\Imses\Course;
+use Itslearning\Objects\Organisation\Column;
+use Itslearning\Objects\Organisation\CoursePlanner;
+use Itslearning\Objects\Organisation\CustomColumnData;
 use Itslearning\Objects\Organisation\ExtensionInstance;
+use Itslearning\Objects\Organisation\Lesson;
+use Itslearning\Objects\Organisation\Topic;
 
 class ItslearningTest extends TestCase
 {
@@ -40,7 +46,7 @@ class ItslearningTest extends TestCase
 
         /* When */
         $itslearning->createCourse($course);
-       
+        
         /* Then */
         //plz no crash
     }
@@ -124,5 +130,85 @@ class ItslearningTest extends TestCase
 
         /* Then */
         $this->assertCount(3, $result->getData());
+    }
+
+    public function testCreateCoursePlanner()
+    {
+        $this->skipInCi();
+
+        /* Given */
+        $itslearning = $this->getInstance();
+
+        $courseSyncKey = 'SDKTEST' . date('YmdHis');
+        try {
+            $course = new Course();
+            $course->setTitle(date('Y-m-d H:i:s') . ' - SDKTest test');
+            $course->setShortDescription('SDKTest course' . date('YmdHis'));
+            $course->setParentSyncKey($this->getHierarchySyncKey());
+            $course->setSyncKey($courseSyncKey);
+            $course->setUserSyncKey($this->getUserSyncKey());
+            $itslearning->createCourse($course);
+        } catch (ItslearningException $e) {
+            $this->assertTrue(false, 'Error creating a course before even trying to create a course planner');
+        }
+
+        $coursePlanner = new CoursePlanner();
+        $coursePlanner->setCourseSyncKey($courseSyncKey);
+        $coursePlanner->setUserSyncKey($this->getUserSyncKey());
+        $coursePlanner->setSyncKey('SDKTEST' . date('YmdHis'));
+
+        $topicColumns = [];
+        $column = new Column();
+        $column->setColumnId(1337);
+        $column->setName('First topic column');
+        $column->setType(Column::TYPE_CUSTOM);
+        $topicColumns[] = $column;
+        $coursePlanner->setTopicColumns($topicColumns);
+
+        $lessonColumns = [];
+        $column = new Column();
+        $column->setColumnId(1620);
+        $column->setName('First lesson column');
+        $column->setType(Column::TYPE_CUSTOM);
+        $lessonColumns[] = $column;
+        $coursePlanner->setLessonColumns($lessonColumns);
+
+        $topic = new Topic();
+        $topic->setName('Hello topic');
+        $customColumnsData = [];
+        $customColumnData = new CustomColumnData();
+        $customColumnData->setColumnId(1337);
+        $customColumnData->setText('1337 column');
+        $topic->setCustomColumnsData($customColumnsData);
+
+        $lesson = new Lesson();
+        $lesson->setName('My lesson');
+        $customColumnsData = [];
+        $customColumnData = new CustomColumnData();
+        $customColumnData->setColumnId(1620);
+        $customColumnData->setText('1620 column');
+        $customColumnsData[] = $customColumnData;
+        $lesson->setCustomColumnsData($customColumnsData);
+        
+        $lessons[] = $lesson;
+        $topic->setLessons($lessons);
+
+        /* Learning objectives */
+        /* TODO: check these when there's need for it, they are rarely used by automated systems */
+//        $learningObjectives = [];
+//        $learningObjective = new LearningObjective();
+//        $learningObjective->setColumndId(1337);
+//        $learningObjective->setLearningObjectiveId(1);
+//        $learningObjectives[] = $learningObjective;
+//        $learningObjective = new LearningObjective();
+//        $learningObjective->setColumndId(1620);
+//        $learningObjective->setLearningObjectiveId(2);
+//        $learningObjectives[] = $learningObjective;
+//        $topic->setLearningObjectives($learningObjectives);
+
+        $coursePlanner->setTopics([$topic]);
+
+        /* When */
+        $result = $itslearning->createCoursePlanner($coursePlanner);
     }
 }
