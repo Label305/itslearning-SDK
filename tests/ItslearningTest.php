@@ -4,6 +4,7 @@
 namespace Tests;
 
 
+use bar\baz\source_with_namespace;
 use Itslearning\Exceptions\ItslearningException;
 use Itslearning\Objects\Imses\Course;
 use Itslearning\Objects\Organisation\Column;
@@ -46,7 +47,7 @@ class ItslearningTest extends TestCase
 
         /* When */
         $itslearning->createCourse($course);
-        
+
         /* Then */
         //plz no crash
     }
@@ -129,7 +130,9 @@ class ItslearningTest extends TestCase
         $result = $itslearning->readCourses(0, 3);
 
         /* Then */
-        $this->assertCount(3, $result->getData());
+        $data = $result->getData();
+        $this->assertCount(3, $data);
+        $this->assertInstanceOf(Course::class, $data[0]);
     }
 
     public function testCreateCoursePlanner()
@@ -189,7 +192,7 @@ class ItslearningTest extends TestCase
         $customColumnData->setText('1620 column');
         $customColumnsData[] = $customColumnData;
         $lesson->setCustomColumnsData($customColumnsData);
-        
+
         $lessons[] = $lesson;
         $topic->setLessons($lessons);
 

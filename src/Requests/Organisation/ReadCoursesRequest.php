@@ -101,7 +101,7 @@ class ReadCoursesRequest implements Request
             $course->setSyncKey($rawCourse->CourseSyncKey);
             $course->setTitle($rawCourse->CourseTitle);
             
-            $courses[] = $courses;
+            $courses[] = $course;
         }
         
         return $courses;
