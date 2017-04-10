@@ -4,15 +4,7 @@
 namespace Tests;
 
 
-use bar\baz\source_with_namespace;
-use Itslearning\Exceptions\ItslearningException;
-use Itslearning\Objects\Imses\Course;
-use Itslearning\Objects\Organisation\Column;
-use Itslearning\Objects\Organisation\CoursePlanner;
-use Itslearning\Objects\Organisation\CustomColumnData;
-use Itslearning\Objects\Organisation\ExtensionInstance;
-use Itslearning\Objects\Organisation\Lesson;
-use Itslearning\Objects\Organisation\Topic;
+use Itslearning\Objects\Organisation\CalendarEvent;
 
 class ItslearningTest extends TestCase
 {
@@ -29,6 +21,104 @@ class ItslearningTest extends TestCase
 
         /* Then */
         $this->assertEquals(54, $result);
+    }
+
+
+    public function testCreateCalendarEvent()
+    {
+        $this->skipInCi();
+
+        /* Given */
+        $itslearning = $this->getInstance();
+
+        $calendarEvent = new CalendarEvent();
+        $calendarEvent->setSyncKey('personal-' . time());
+        $calendarEvent->setStartDateTime(new \DateTime());
+        $calendarEvent->setEndDateTime(new \DateTime('+1 hour'));
+        $calendarEvent->setUserSyncKey('798951');
+
+        /* When */
+        $itslearning->createCalendarEvent($calendarEvent);
+
+        /* Then */
+        //plz no crash
+    }
+
+    public function testCreateCalendarEvents()
+    {
+        $this->skipInCi();
+
+        /* Given */
+        $itslearning = $this->getInstance();
+
+        $calendarEvent1 = new CalendarEvent();
+        $calendarEvent1->setSyncKey('personal-2-' . time());
+        $calendarEvent1->setStartDateTime(new \DateTime());
+        $calendarEvent1->setEndDateTime(new \DateTime('+1 hour'));
+        $calendarEvent1->setUserSyncKey('798951');
+
+        $calendarEvent2 = new CalendarEvent();
+        $calendarEvent2->setSyncKey('personal-1-' . time());
+        $calendarEvent2->setStartDateTime(new \DateTime('+1 hour'));
+        $calendarEvent2->setEndDateTime(new \DateTime('+2 hours'));
+        $calendarEvent2->setUserSyncKey('798951');
+
+        /* When */
+        $itslearning->createCalendarEvents([
+            $calendarEvent1,
+            $calendarEvent2
+        ]);
+
+        /* Then */
+        //plz no crash
+    }
+
+    public function testDeleteCalendarEvent()
+    {
+        $this->skipInCi();
+        /* Given */
+        $itslearning = $this->getInstance();
+
+        $calendarEvent = new CalendarEvent();
+        $calendarEvent->setSyncKey('personal-' . time());
+        $calendarEvent->setStartDateTime(new \DateTime());
+        $calendarEvent->setEndDateTime(new \DateTime('+1 hour'));
+        $calendarEvent->setUserSyncKey('798951');
+        $itslearning->createCalendarEvent($calendarEvent);
+
+        /* When */
+        $itslearning->deleteCalendarEvent($calendarEvent->getSyncKey());
+        $itslearning->deleteCalendarEvent($calendarEvent->getSyncKey());
+
+        /* Then */
+        //plz No crash
+    }
+
+    public function testDeleteCalendarEvents()
+    {
+        $this->skipInCi();
+        /* Given */
+        $itslearning = $this->getInstance();
+
+        $calendarEvent = new CalendarEvent();
+        $calendarEvent->setSyncKey('personal-' . time());
+        $calendarEvent->setStartDateTime(new \DateTime());
+        $calendarEvent->setEndDateTime(new \DateTime('+1 hour'));
+        $calendarEvent->setUserSyncKey('798951');
+
+        $calendarEvent2 = new CalendarEvent();
+        $calendarEvent2->setSyncKey('personal-1-' . time());
+        $calendarEvent2->setStartDateTime(new \DateTime('+1 hour'));
+        $calendarEvent2->setEndDateTime(new \DateTime('+2 hours'));
+        $calendarEvent2->setUserSyncKey('798951');
+
+        $itslearning->createCalendarEvents([$calendarEvent, $calendarEvent2]);
+
+        /* When */
+        $itslearning->deleteCalendarEvents([$calendarEvent->getSyncKey(), $calendarEvent2->getSyncKey()]);
+
+        /* Then */
+        //plz No crash
     }
 
     public function testCreateCourse()

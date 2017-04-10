@@ -7,6 +7,7 @@ use Itslearning\Client\SoapClientFactory;
 use Itslearning\Exceptions\MessageTypeNotFoundException;
 use Itslearning\Objects\Imses\Course;
 use Itslearning\Objects\Imses\Person;
+use Itslearning\Objects\Organisation\CalendarEvent;
 use Itslearning\Objects\Organisation\CoursePlanner;
 use Itslearning\Objects\Organisation\ExtensionInstance;
 use Itslearning\Objects\Organisation\MessageType;
@@ -17,6 +18,10 @@ use Itslearning\Requests\Imses\ReadPersonRequest;
 use Itslearning\Requests\Imses\ReadPersonsRequest;
 use Itslearning\Requests\Organisation\CreateCoursePlannerRequest;
 use Itslearning\Requests\Organisation\CreateExtensionInstanceRequest;
+use Itslearning\Requests\Organisation\CreateOrUpdateCalendarEventRequest;
+use Itslearning\Requests\Organisation\CreateOrUpdateCalendarEventsRequest;
+use Itslearning\Requests\Organisation\DeleteCalendarEventRequest;
+use Itslearning\Requests\Organisation\DeleteCalendarEventsRequest;
 use Itslearning\Requests\Organisation\GetMessageTypesRequest;
 use Itslearning\Requests\Organisation\ReadCoursesRequest;
 use Itslearning\Requests\Organisation\UpdateExtensionInstanceRequest;
@@ -45,7 +50,7 @@ class Itslearning
     /**
      * Itslearning constructor.
      * @param ItslearningCredentials $credentials
-     * @param ClientFactory          $clientFactory
+     * @param ClientFactory $clientFactory
      */
     public function __construct(
         ItslearningCredentials $credentials,
@@ -69,6 +74,66 @@ class Itslearning
         $client = $this->clientFactory->imses($this->credentials);
 
         $request = new CreateCourseRequest($course);
+
+        return $request->execute($client);
+    }
+
+    /**
+     * @link http://developer.itslearning.com/Create.Calendar.Event_and_Update.Calendar.Event.html
+     * @param CalendarEvent $calendarEvent
+     * @return CalendarEvent
+     */
+    public function createCalendarEvent(CalendarEvent $calendarEvent): CalendarEvent
+    {
+        $client = $this->clientFactory->organisationData($this->credentials);
+
+        $messageTypeIdentifier = $this->findMessageTypeIdentifierByName(CreateOrUpdateCalendarEventRequest::CREATE_CALENDAR_EVENT_MESSAGE_TYPE_NAME);
+        $request = new CreateOrUpdateCalendarEventRequest($calendarEvent, $messageTypeIdentifier);
+
+        return $request->execute($client);
+    }
+
+    /**
+     * @link http://developer.itslearning.com/Create.Calendar.Event_and_Update.Calendar.Event.html
+     * @param CalendarEvent[] $calendarEvent
+     * @return CalendarEvent[]
+     */
+    public function createCalendarEvents(array $calendarEvents): array
+    {
+        $client = $this->clientFactory->organisationData($this->credentials);
+
+        $messageTypeIdentifier = $this->findMessageTypeIdentifierByName(CreateOrUpdateCalendarEventsRequest::CREATE_CALENDAR_EVENT_MESSAGE_TYPE_NAME);
+        $request = new CreateOrUpdateCalendarEventsRequest($calendarEvents, $messageTypeIdentifier);
+
+        return $request->execute($client);
+    }
+
+    /**
+     * @link http://developer.itslearning.com/Create.Calendar.Event_and_Update.Calendar.Event.html
+     * @param CalendarEvent $calendarEvent
+     * @return CalendarEvent
+     */
+    public function updateCalendarEvent(CalendarEvent $calendarEvent)
+    {
+        $client = $this->clientFactory->organisationData($this->credentials);
+
+        $messageTypeIdentifier = $this->findMessageTypeIdentifierByName(CreateOrUpdateCalendarEventsRequest::UPDATE_CALENDAR_EVENT_MESSAGE_TYPE_NAME);
+        $request = new CreateOrUpdateCalendarEventRequest($calendarEvent, $messageTypeIdentifier);
+
+        return $request->execute($client);
+    }
+
+    /**
+     * @link http://developer.itslearning.com/Create.Calendar.Event_and_Update.Calendar.Event.html
+     * @param CalendarEvent[] $calendarEvents
+     * @return CalendarEvent[]
+     */
+    public function updateCalendarEvents(array $calendarEvents)
+    {
+        $client = $this->clientFactory->organisationData($this->credentials);
+
+        $messageTypeIdentifier = $this->findMessageTypeIdentifierByName(CreateOrUpdateCalendarEventsRequest::UPDATE_CALENDAR_EVENT_MESSAGE_TYPE_NAME);
+        $request = new CreateOrUpdateCalendarEventsRequest($calendarEvents, $messageTypeIdentifier);
 
         return $request->execute($client);
     }
@@ -153,8 +218,8 @@ class Itslearning
 
     /**
      * @link http://developer.itslearning.com/readAllPersons.html
-     * @param int  $pageIndex
-     * @param int  $pageSize
+     * @param int $pageIndex
+     * @param int $pageSize
      * @param null $createdFrom
      * @param bool $onlyManuallyCreatedUsers
      * @param bool $convertFromManual
@@ -219,4 +284,37 @@ class Itslearning
 
         return $request->execute($client);
     }
+
+    /**
+     * @link http://developer.itslearning.com/Delete.Calendar.Event.html
+     * @param string $syncID
+     * @return bool
+     */
+    public function deleteCalendarEvent(string $syncID)
+    {
+        $client = $this->clientFactory->organisationData($this->credentials);
+
+        $messageTypeIdentifier = $this->findMessageTypeIdentifierByName(DeleteCalendarEventRequest::MESSAGE_TYPE_NAME);
+
+        $request = new DeleteCalendarEventRequest($syncID, $messageTypeIdentifier);
+
+        return $request->execute($client);
+    }
+
+    /**
+     * @link http://developer.itslearning.com/Delete.Calendar.Event.html
+     * @param array $syncIDs
+     * @return bool
+     */
+    public function deleteCalendarEvents(array $syncIDs)
+    {
+        $client = $this->clientFactory->organisationData($this->credentials);
+
+        $messageTypeIdentifier = $this->findMessageTypeIdentifierByName(DeleteCalendarEventsRequest::MESSAGE_TYPE_NAME);
+        $request = new DeleteCalendarEventsRequest($syncIDs, $messageTypeIdentifier);
+
+        return $request->execute($client);
+    }
+
+
 }
