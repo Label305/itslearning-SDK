@@ -78,8 +78,9 @@ class ItslearningSoapClientBuilder
 
         $soapClient = new \SoapClient($wsdl, [
             'stream_context' => $context,
-            'cache_wsdl' => WSDL_CACHE_NONE,
-            'trace' => true
+            'cache_wsdl' => WSDL_CACHE_MEMORY,
+            'trace' => true,
+            'keep_alive' => false
         ]);
 
         foreach ($this->interceptors as $interceptor) {
