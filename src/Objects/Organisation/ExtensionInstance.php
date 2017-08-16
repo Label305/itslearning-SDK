@@ -4,16 +4,28 @@
 namespace Itslearning\Objects\Organisation;
 
 
-class ExtensionInstance
+class ExtensionInstance implements CourseElement
 {
 
+    const LOCATION_COURSE = 'Course';
+    const LOCATION_LIBRARY = 'Library';
+
     /**
-     * @var string
+     * @var string|null
      */
     private $syncKey;
 
     /**
-     * Either "Course" or "Library"
+     * @var int|null
+     */
+    private $siteId;
+
+    /**
+     * @var string|null
+     */
+    private $vendorId;
+
+    /**
      * @var string
      */
     private $location;
@@ -24,12 +36,27 @@ class ExtensionInstance
     private $extensionId;
 
     /**
-     * @var string
+     * @var int|null
+     */
+    private $courseId;
+
+    /**
+     * @var string|null
      */
     private $courseSyncKey;
 
     /**
-     * @var string
+     * @var string|null
+     */
+    private $parentSyncKey;
+
+    /**
+     * @var int|null
+     */
+    private $userId;
+
+    /**
+     * @var string|null
      */
     private $userSyncKey;
 
@@ -39,38 +66,17 @@ class ExtensionInstance
     private $title;
 
     /**
-     * @var string
+     * @var bool|null
      */
-    private $description;
+    private $disallowModification;
 
     /**
-     * @var string
+     * @var ExtensionInstanceContent
      */
     private $content;
 
     /**
-     * @var string
-     */
-    private $language;
-
-    /**
-     * @var string[]
-     */
-    private $keywords;
-
-    /**
-     * @todo whut is this
-     * @var mixed
-     */
-    private $learningObjectives;
-
-    /**
-     * @var string
-     */
-    private $intendedEndUserRole;
-
-    /**
-     * @return string
+     * @return null|string
      */
     public function getSyncKey()
     {
@@ -78,17 +84,49 @@ class ExtensionInstance
     }
 
     /**
-     * @param string $syncKey
+     * @param null|string $syncKey
      */
-    public function setSyncKey(string $syncKey)
+    public function setSyncKey($syncKey)
     {
         $this->syncKey = $syncKey;
     }
 
     /**
+     * @return int|null
+     */
+    public function getSiteId()
+    {
+        return $this->siteId;
+    }
+
+    /**
+     * @param int|null $siteId
+     */
+    public function setSiteId($siteId)
+    {
+        $this->siteId = $siteId;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getVendorId()
+    {
+        return $this->vendorId;
+    }
+
+    /**
+     * @param null|string $vendorId
+     */
+    public function setVendorId($vendorId)
+    {
+        $this->vendorId = $vendorId;
+    }
+
+    /**
      * @return string
      */
-    public function getLocation()
+    public function getLocation(): string
     {
         return $this->location;
     }
@@ -104,7 +142,7 @@ class ExtensionInstance
     /**
      * @return int
      */
-    public function getExtensionId()
+    public function getExtensionId(): int
     {
         return $this->extensionId;
     }
@@ -118,7 +156,23 @@ class ExtensionInstance
     }
 
     /**
-     * @return string
+     * @return int|null
+     */
+    public function getCourseId()
+    {
+        return $this->courseId;
+    }
+
+    /**
+     * @param int|null $courseId
+     */
+    public function setCourseId($courseId)
+    {
+        $this->courseId = $courseId;
+    }
+
+    /**
+     * @return null|string
      */
     public function getCourseSyncKey()
     {
@@ -126,15 +180,47 @@ class ExtensionInstance
     }
 
     /**
-     * @param string $courseSyncKey
+     * @param null|string $courseSyncKey
      */
-    public function setCourseSyncKey(string $courseSyncKey)
+    public function setCourseSyncKey($courseSyncKey)
     {
         $this->courseSyncKey = $courseSyncKey;
     }
 
     /**
-     * @return string
+     * @return null|string
+     */
+    public function getParentSyncKey()
+    {
+        return $this->parentSyncKey;
+    }
+
+    /**
+     * @param null|string $parentSyncKey
+     */
+    public function setParentSyncKey($parentSyncKey)
+    {
+        $this->parentSyncKey = $parentSyncKey;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getUserId()
+    {
+        return $this->userId;
+    }
+
+    /**
+     * @param int|null $userId
+     */
+    public function setUserId($userId)
+    {
+        $this->userId = $userId;
+    }
+
+    /**
+     * @return null|string
      */
     public function getUserSyncKey()
     {
@@ -142,9 +228,9 @@ class ExtensionInstance
     }
 
     /**
-     * @param string $userSyncKey
+     * @param null|string $userSyncKey
      */
-    public function setUserSyncKey(string $userSyncKey)
+    public function setUserSyncKey($userSyncKey)
     {
         $this->userSyncKey = $userSyncKey;
     }
@@ -152,7 +238,7 @@ class ExtensionInstance
     /**
      * @return string
      */
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->title;
     }
@@ -166,98 +252,35 @@ class ExtensionInstance
     }
 
     /**
-     * @return string
+     * @return bool|null
      */
-    public function getDescription()
+    public function getDisallowModification()
     {
-        return $this->description;
+        return $this->disallowModification;
     }
 
     /**
-     * @param string $description
+     * @param bool|null $disallowModification
      */
-    public function setDescription(string $description)
+    public function setDisallowModification($disallowModification)
     {
-        $this->description = $description;
+        $this->disallowModification = $disallowModification;
     }
-
+  
     /**
-     * @return string
+     * @return ExtensionInstanceContent
      */
-    public function getContent()
+    public function getContent(): ExtensionInstanceContent
     {
         return $this->content;
     }
 
     /**
-     * @param string $content
+     * @param ExtensionInstanceContent $content
      */
-    public function setContent(string $content)
+    public function setContent(ExtensionInstanceContent $content)
     {
         $this->content = $content;
     }
 
-    /**
-     * @return string
-     */
-    public function getLanguage()
-    {
-        return $this->language;
-    }
-
-    /**
-     * @param string $language
-     */
-    public function setLanguage(string $language)
-    {
-        $this->language = $language;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getLearningObjectives()
-    {
-        return $this->learningObjectives;
-    }
-
-    /**
-     * @param mixed $learningObjectives
-     */
-    public function setLearningObjectives($learningObjectives)
-    {
-        $this->learningObjectives = $learningObjectives;
-    }
-
-    /**
-     * @return \string[]
-     */
-    public function getKeywords()
-    {
-        return $this->keywords;
-    }
-
-    /**
-     * @param \string[] $keywords
-     */
-    public function setKeywords($keywords)
-    {
-        $this->keywords = $keywords;
-    }
-
-    /**
-     * @return string
-     */
-    public function getIntendedEndUserRole()
-    {
-        return $this->intendedEndUserRole;
-    }
-
-    /**
-     * @param string $intendedEndUserRole
-     */
-    public function setIntendedEndUserRole(string $intendedEndUserRole)
-    {
-        $this->intendedEndUserRole = $intendedEndUserRole;
-    }
 }
