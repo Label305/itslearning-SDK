@@ -14,5 +14,7 @@ interface ClientFactory
     public function organisationData(ItslearningCredentials $credentials):ItslearningClient;
     
     public function organisationReadData(ItslearningCredentials $credentials):ItslearningClient;
+    
+    public function organisationFile(ItslearningCredentials $credentials):ItslearningClient;
 
 }

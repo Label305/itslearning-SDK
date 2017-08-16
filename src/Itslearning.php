@@ -11,6 +11,8 @@ use Itslearning\Objects\Organisation\CalendarEvent;
 use Itslearning\Objects\Organisation\CoursePlanner;
 use Itslearning\Objects\Organisation\ExtensionInstance;
 use Itslearning\Objects\Organisation\MessageType;
+use Itslearning\Objects\Organisation\MyFilesFile;
+use Itslearning\Objects\Organisation\UploadFile;
 use Itslearning\Objects\PaginatedResponse;
 use Itslearning\Requests\Imses\CreateCourseRequest;
 use Itslearning\Requests\Imses\ReadAllPersonsRequest;
@@ -18,6 +20,7 @@ use Itslearning\Requests\Imses\ReadPersonRequest;
 use Itslearning\Requests\Imses\ReadPersonsRequest;
 use Itslearning\Requests\Organisation\CreateCoursePlannerRequest;
 use Itslearning\Requests\Organisation\CreateExtensionInstanceRequest;
+use Itslearning\Requests\Organisation\CreateMyFilesFileRequest;
 use Itslearning\Requests\Organisation\CreateOrUpdateCalendarEventRequest;
 use Itslearning\Requests\Organisation\CreateOrUpdateCalendarEventsRequest;
 use Itslearning\Requests\Organisation\DeleteCalendarEventRequest;
@@ -25,6 +28,7 @@ use Itslearning\Requests\Organisation\DeleteCalendarEventsRequest;
 use Itslearning\Requests\Organisation\GetMessageTypesRequest;
 use Itslearning\Requests\Organisation\ReadCoursesRequest;
 use Itslearning\Requests\Organisation\UpdateExtensionInstanceRequest;
+use Itslearning\Requests\Organisation\UploadFileRequest;
 
 class Itslearning
 {
@@ -56,7 +60,8 @@ class Itslearning
         ItslearningCredentials $credentials,
         ClientFactory $clientFactory = null,
         string $env = null
-    ) {
+    )
+    {
         $this->credentials = $credentials;
         $this->env = $env === null ? self::PRODUCTION : $env;
         $this->clientFactory = $clientFactory === null ? new SoapClientFactory($env) : $clientFactory;
@@ -184,6 +189,21 @@ class Itslearning
     }
 
     /**
+     * @link http://developer.itslearning.com/Create.Course.File.html
+     * @param MyFilesFile $myFilesFile
+     * @return UploadFile
+     */
+    public function createMyFilesFile(MyFilesFile $myFilesFile): MyFilesFile
+    {
+        $client = $this->clientFactory->organisationData($this->credentials);
+
+        $messageTypeIdentifier = $this->findMessageTypeIdentifierByName(CreateMyFilesFileRequest::CREATE_MY_FILE_FILE_MESSAGE_TYPE_NAME);
+        $request = new CreateMyFilesFileRequest($myFilesFile, $messageTypeIdentifier);
+
+        return $request->execute($client);
+    }
+
+    /**
      * @link http://developer.itslearning.com/DataService.svc_methods_and_messages.html
      * @return MessageType[]
      */
@@ -231,7 +251,8 @@ class Itslearning
         $createdFrom = null,
         bool $onlyManuallyCreatedUsers = false,
         bool $convertFromManual = false
-    ): PaginatedResponse {
+    ): PaginatedResponse
+    {
         $client = $this->clientFactory->imses($this->credentials);
 
         $request = new ReadAllPersonsRequest(
@@ -312,6 +333,20 @@ class Itslearning
 
         $messageTypeIdentifier = $this->findMessageTypeIdentifierByName(DeleteCalendarEventsRequest::MESSAGE_TYPE_NAME);
         $request = new DeleteCalendarEventsRequest($syncIDs, $messageTypeIdentifier);
+
+        return $request->execute($client);
+    }
+
+    /**
+     * @link http://developer.itslearning.com/FileService.svc_methods_and_messages.html
+     * @param UploadFile $uploadFile
+     * @return UploadFile
+     */
+    public function uploadFile(UploadFile $uploadFile): UploadFile
+    {
+        $client = $this->clientFactory->organisationFile($this->credentials);
+
+        $request = new UploadFileRequest($uploadFile);
 
         return $request->execute($client);
     }

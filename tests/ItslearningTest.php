@@ -4,24 +4,20 @@
 namespace Tests;
 
 
+use Itslearning\Exceptions\ItslearningException;
+use Itslearning\Objects\Imses\Course;
 use Itslearning\Objects\Organisation\CalendarEvent;
+use Itslearning\Objects\Organisation\Column;
+use Itslearning\Objects\Organisation\CoursePlanner;
+use Itslearning\Objects\Organisation\CustomColumnData;
+use Itslearning\Objects\Organisation\File;
+use Itslearning\Objects\Organisation\Lesson;
+use Itslearning\Objects\Organisation\MyFilesFile;
+use Itslearning\Objects\Organisation\Topic;
+use Itslearning\Objects\Organisation\UploadFile;
 
 class ItslearningTest extends TestCase
 {
-
-    public function testGetMessageTypeIdentifier()
-    {
-        $this->skipInCi();
-
-        /* Given */
-        $itslearning = $this->getInstance();
-
-        /* When */
-        $result = $itslearning->findMessageTypeIdentifierByName('Update.Extension.Instance');
-
-        /* Then */
-        $this->assertEquals(54, $result);
-    }
 
 
     public function testCreateCalendarEvent()
@@ -121,6 +117,20 @@ class ItslearningTest extends TestCase
         //plz No crash
     }
 
+    public function testGetMessageTypeIdentifier()
+    {
+        $this->skipInCi();
+
+        /* Given */
+        $itslearning = $this->getInstance();
+
+        /* When */
+        $result = $itslearning->findMessageTypeIdentifierByName('Update.Extension.Instance');
+
+        /* Then */
+        $this->assertEquals(54, $result);
+    }
+
     public function testCreateCourse()
     {
         $this->skipInCi();
@@ -138,28 +148,6 @@ class ItslearningTest extends TestCase
         /* When */
         $itslearning->createCourse($course);
 
-        /* Then */
-        //plz no crash
-    }
-
-    public function testCreateExtension()
-    {
-        $this->skipInCi();
-
-        /* Given */
-        $itslearning = $this->getInstance();
-
-        $extensionInstance = new ExtensionInstance();
-        $extensionInstance->setSyncKey('SDKTEST' . time());
-        $extensionInstance->setLocation('Library');
-        $extensionInstance->setExtensionId(5000);//Should be 5010
-        $extensionInstance->setCourseSyncKey($this->getCourseSyncKey());
-        $extensionInstance->setUserSyncKey($this->getUserSyncKey());
-        $extensionInstance->setTitle('Sdk - TEST');
-        $extensionInstance->setContent('http://www.label305.com');
-
-        /* When */
-        $itslearning->createExtension($extensionInstance);
         /* Then */
         //plz no crash
     }
@@ -304,4 +292,54 @@ class ItslearningTest extends TestCase
         /* When */
         $result = $itslearning->createCoursePlanner($coursePlanner);
     }
+
+    public function testUploadFile()
+    {
+        $this->skipInCi();
+
+        /* Given */
+        $itslearning = $this->getInstance();
+
+        $uploadFile = new UploadFile();
+        $uploadFile->setName('itslearning_logo.png');
+        $uploadFile->setContent(file_get_contents(__DIR__ . '/Resources/itslearning_logo.png'));
+
+        /* When */
+        $itslearning->uploadFile($uploadFile);
+    }
+
+
+    public function testCourseFile()
+    {
+        $this->skipInCi();
+
+        /* Given */
+        $itslearning = $this->getInstance();
+
+        $firstUploadedFile = new UploadFile();
+        $firstUploadedFile->setName('itslearning_logo.png');
+        $firstUploadedFile->setContent(file_get_contents(__DIR__ . '/Resources/itslearning_logo.png'));
+        $itslearning->uploadFile($firstUploadedFile);
+        $secondUploadedFile = new UploadFile();
+        $secondUploadedFile->setName('itslearning_logo.png');
+        $secondUploadedFile->setContent(file_get_contents(__DIR__ . '/Resources/itslearning_logo.png'));
+        $itslearning->uploadFile($secondUploadedFile);
+
+        /* When */
+        $myFileFile = new MyFilesFile();
+        $myFileFile->setUserSyncKey(getenv('USER_SYNC_KEY'));
+        $myFileFile->setVisibility(MyFilesFile::VISIBILITY_PUBLIC);
+        $firstFile = new File();
+        $firstFile->setFileSyncKey($firstUploadedFile->getSyncKey());
+        $secondFile = new File();
+        $secondFile->setFileSyncKey($secondUploadedFile->getSyncKey());
+        $myFileFile->setFiles([$firstFile, $secondFile]);
+        $result = $itslearning->createMyFilesFile($myFileFile);
+
+        /* Then */
+        $this->assertNotEmpty($result->getFiles()[0]->getSyncKey());
+        $this->assertNotEmpty($result->getFiles()[1]->getSyncKey());
+    }
+
+
 }

@@ -18,6 +18,7 @@ class ItslearningSoapClient implements ItslearningClient
 
     const MESSAGE_STATUS_TYPE_INFO = 'Info';
     const MESSAGE_STATUS_TYPE_ERROR = 'Error';
+    const RAW_XML_PLACEHOLDER_PREFIX = 'ITSLEARNINGXMLPLACHOLDER';
 
 
     /**
@@ -40,9 +41,9 @@ class ItslearningSoapClient implements ItslearningClient
 
     /**
      * @param string $method
-     * @param array  $arguments
+     * @param array $arguments
      */
-    public function call(string $method, array $arguments)
+    public function call(string $method, array $arguments, SoapFaultHandler $soapFaultHandler = null)
     {
         try {
             $result = $this->soapClient->__soapCall($method, $arguments, null, null, $output_headers);
@@ -51,22 +52,29 @@ class ItslearningSoapClient implements ItslearningClient
 
             return $result;
         } catch (\SoapFault $e) {
-            throw new RequestException($e->getMessage(), $e->getCode(), $e);
+            if ($soapFaultHandler !== null) {
+                return $soapFaultHandler->handleSoapFault($e, $this->soapClient);
+            } else {
+                throw new RequestException($e->getMessage(), $e->getCode(), $e);
+            }
         }
     }
 
     /**
      * @param string $type
-     * @param array  $data
+     * @param array $data
      * @throws ItslearningException
      */
     public function message(string $type, array $data)
     {
+        $placeholders = $this->extractRawPlaceholders($data);
+
         $dom = XmlHelper::fromArray($data);
+        $dataXml = $dom->saveXML();
 
         $arguments = [
             'dataMessage' => [
-                'Data' => $dom->saveXML(),
+                'Data' => $this->injectRaw($placeholders, $dataXml),
                 'Type' => $type
             ]
         ];
@@ -127,12 +135,13 @@ class ItslearningSoapClient implements ItslearningClient
                 !isset($status->GetMessageResultResult->Status)
                 || (
                     $status->GetMessageResultResult->Status != self::STATUS_INQUEUE
-                    && isset($status->GetMessageResultResult->StatusDetails->DataMessageStatusDetail->Type)
-                    && $status->GetMessageResultResult->StatusDetails->DataMessageStatusDetail->Type == self::MESSAGE_STATUS_TYPE_ERROR
+                    && $this->messageResultHasError($status)
                 )
             ) {
                 if (isset($status->GetMessageResultResult->StatusDetails->DataMessageStatusDetail->Message)) {
                     $str = 'Error from queued AddMessage request: ' . $status->GetMessageResultResult->StatusDetails->DataMessageStatusDetail->Message;
+                } else if (isset($status->GetMessageResultResult->StatusDetails->DataMessageStatusDetail[0]->Message)) {
+                    $str = 'Error from queued AddMessage request: ' . $status->GetMessageResultResult->StatusDetails->DataMessageStatusDetail[0]->Message;
                 } else {
                     $str = 'An error occured from queued AddMessage request without DataMessageStatusDetail';
                 }
@@ -142,6 +151,64 @@ class ItslearningSoapClient implements ItslearningClient
         } while ($status->GetMessageResultResult->Status == self::STATUS_INQUEUE);
 
         return $status;
+    }
+
+    private function messageResultHasError($status)
+    {
+        if (isset($status->GetMessageResultResult->StatusDetails->DataMessageStatusDetail)) {
+            if (!is_array($status->GetMessageResultResult->StatusDetails->DataMessageStatusDetail)) {
+                return $status->GetMessageResultResult->StatusDetails->DataMessageStatusDetail->Type == self::MESSAGE_STATUS_TYPE_ERROR;
+            } else {
+                foreach ($status->GetMessageResultResult->StatusDetails->DataMessageStatusDetail as $dataMessageStatusDetail) {
+                    if ($dataMessageStatusDetail->Type == self::MESSAGE_STATUS_TYPE_ERROR) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Extracts all parts that should've been kept as raw xml
+     * @param $data
+     * @return array
+     */
+    private function extractRawPlaceholders(array &$data, &$index = 1): array
+    {
+        $placeholders = [];
+        foreach ($data as $key => &$value) {
+            if (
+                is_string($value)
+                && strpos($value, '<![XML[') === 0
+                && substr($value, -strlen(']]>')) === ']]>'
+            ) {
+                $placeholderValue = substr($value, strlen('<![XML['), strlen($value) - strlen('<![XML[]]>'));
+                $identifier = self::RAW_XML_PLACEHOLDER_PREFIX . $index;
+                $index++;
+                $placeholders[$identifier] = $placeholderValue;
+                $data[$key] = $identifier;
+            } elseif (is_array($value)) {
+                $placeholders = array_merge($this->extractRawPlaceholders($value, $index));
+            }
+        }
+
+        return $placeholders;
+    }
+
+    /**
+     * Re-injects parts that should have been kept as raw content,
+     * @param array $placeholders
+     * @param string $xml
+     * @return string
+     */
+    private function injectRaw(array $placeholders, string $xml): string
+    {
+        foreach ($placeholders as $identifier => $value) {
+            $xml = str_replace($identifier, $value, $xml);
+        }
+        return $xml;
     }
 
 }

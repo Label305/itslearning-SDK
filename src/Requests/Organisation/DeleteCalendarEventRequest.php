@@ -32,7 +32,7 @@ class DeleteCalendarEventRequest implements Request
 
     /**
      * @param ItslearningClient $client
-     * @return void
+     * @return bool
      */
     public function execute(ItslearningClient $client)
     {
@@ -41,7 +41,7 @@ class DeleteCalendarEventRequest implements Request
         $result = $client->message($this->messageTypeIdentifier, $data);
 
         $this->transform($result);
-        return;
+        return true;
     }
 
     private function map(string $syncID)

@@ -63,6 +63,14 @@ class ItslearningSoapClientBuilder
     }
 
     /**
+     * @return ItslearningSoapClient
+     */
+    public function organisationFile(): ItslearningSoapClient
+    {
+        return $this->build($this->serviceProvider->getOrganisationFileWsdlUrl());
+    }
+
+    /**
      * @param string $wsdl
      * @return ItslearningSoapClient
      */

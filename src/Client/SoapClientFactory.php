@@ -5,8 +5,6 @@ namespace Itslearning\Client;
 
 use Itslearning\Client\Interceptors\ImsesAuthenticationInterceptor;
 use Itslearning\Client\Interceptors\OrganisationAuthenticationInterceptor;
-use Itslearning\Client\Interceptors\ServiceEntitiesInterceptor;
-use Itslearning\Client\Interceptors\TmpUriInterceptor;
 use Itslearning\ItslearningCredentials;
 
 class SoapClientFactory implements ClientFactory
@@ -56,5 +54,16 @@ class SoapClientFactory implements ClientFactory
         return (new ItslearningSoapClientBuilder($this->env))
             ->addInterceptor(new OrganisationAuthenticationInterceptor($credentials))
             ->organisationReadData();
+    }
+
+    /**
+     * @param ItslearningCredentials $credentials
+     * @return ItslearningClient
+     */
+    public function organisationFile(ItslearningCredentials $credentials): ItslearningClient
+    {
+        return (new ItslearningSoapClientBuilder($this->env))
+            ->addInterceptor(new OrganisationAuthenticationInterceptor($credentials))
+            ->organisationFile();
     }
 }

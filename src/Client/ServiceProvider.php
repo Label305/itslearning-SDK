@@ -16,10 +16,12 @@ class ServiceProvider
 
     const PRODUCTION_ORGANISATION_DATA_WSDL = 'https://migra.itslearning.com/ContentImport/DataService.svc?wsdl';
     const PRODUCTION_ORGANISATION_READ_DATA_WSDL = 'https://migra.itslearning.com/ContentImport/ReadDataService.svc?wsdl';
+    const PRODUCTION_ORGANISATION_FILE_WSDL = 'https://migra.itslearning.com/ContentImport/FileService.svc?wsdl';
     const PRODUCTION_IMSES_WSDL = 'https://enterprise.itslearning.com/WCFServiceLibrary/ImsEnterpriseServicesPort.svc?wsdl';
 
     const TESTING_ORGANISATION_DATA_WSDL = 'https://migra.itsltest.com/DataService.svc?wsdl';
     const TESTING_ORGANISATION_READ_DATA_WSDL = 'https://migra.itsltest.com/ReadDataService.svc?wsdl';
+    const TESTING_ORGANISATION_FILE_WSDL = 'https://migra.itsltest.com/ContentImport/FileService.svc?wsdl';
     const TESTING_IMSES_WSDL = 'https://enterprise.itsltest.com/WCFServiceLibrary/ImsEnterpriseServicesPort.svc?wsdl';
 
     /**
@@ -73,6 +75,22 @@ class ServiceProvider
                 return self::PRODUCTION_ORGANISATION_READ_DATA_WSDL;
             case Itslearning::TESTING:
                 return self::TESTING_ORGANISATION_READ_DATA_WSDL;
+        }
+
+        throw new EnvironmentNotFoundException('Trying to access environment:' . $this->env);
+    }
+
+    /**
+     * @return string
+     * @throws EnvironmentNotFoundException
+     */
+    public function getOrganisationFileWsdlUrl(): string
+    {
+        switch ($this->env) {
+            case Itslearning::PRODUCTION:
+                return self::PRODUCTION_ORGANISATION_FILE_WSDL;
+            case Itslearning::TESTING:
+                return self::TESTING_ORGANISATION_FILE_WSDL;
         }
 
         throw new EnvironmentNotFoundException('Trying to access environment:' . $this->env);
