@@ -67,17 +67,22 @@ class CreateCoursePlannerRequest implements Request
             $payload['Planner']['Columns']['LessonColumns'] = $this->mapColumns($columns);
         }
         if (count($coursePlanner->getTopics()) > 0) {
-            $payload['Planner']['Topics'] = $this->mapTopics($coursePlanner->getTopics());
+            $topics = $coursePlanner->getTopics();
+            $payload['Planner']['Topics'] = $this->mapTopics($topics);
         }
 
+        $message = [
+            'xmlns:' => 'urn:message-schema'
+        ];
+        if ($coursePlanner->getSyncKey() !== null) {
+            $message['SyncKeys'] = [
+                'SyncKey' => $coursePlanner->getSyncKey()
+            ];
+        }
+        $message['CreateCoursePlanner'] = [$payload];
+
         return [
-            'Message' => [
-                'xmlns:' => 'urn:message-schema',
-                'SyncKeys' => [
-                    'SyncKey' => $coursePlanner->getSyncKey()
-                ],
-                'CreateCoursePlanner' => $payload
-            ]
+            'Message' => $message
         ];
     }
 

@@ -8,7 +8,7 @@ class CoursePlanner
 {
 
     /**
-     * @var string
+     * @var string|null
      */
     private $syncKey;
 
@@ -48,17 +48,17 @@ class CoursePlanner
     private $topics;
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getSyncKey(): string
+    public function getSyncKey()
     {
         return $this->syncKey;
     }
 
     /**
-     * @param string $syncKey
+     * @param string|null $syncKey
      */
-    public function setSyncKey(string $syncKey)
+    public function setSyncKeystring($syncKey)
     {
         $this->syncKey = $syncKey;
     }
