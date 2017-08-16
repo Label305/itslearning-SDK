@@ -8,6 +8,10 @@ use Itslearning\Exceptions\MessageTypeNotFoundException;
 use Itslearning\Objects\Imses\Course;
 use Itslearning\Objects\Imses\Person;
 use Itslearning\Objects\Organisation\CalendarEvent;
+use Itslearning\Objects\Organisation\CourseElementAssignment;
+use Itslearning\Objects\Organisation\CourseElementFolder;
+use Itslearning\Objects\Organisation\CourseElementPage;
+use Itslearning\Objects\Organisation\CourseElementTest;
 use Itslearning\Objects\Organisation\CoursePlanner;
 use Itslearning\Objects\Organisation\ExtensionInstance;
 use Itslearning\Objects\Organisation\MessageType;
@@ -18,6 +22,10 @@ use Itslearning\Requests\Imses\CreateCourseRequest;
 use Itslearning\Requests\Imses\ReadAllPersonsRequest;
 use Itslearning\Requests\Imses\ReadPersonRequest;
 use Itslearning\Requests\Imses\ReadPersonsRequest;
+use Itslearning\Requests\Organisation\CreateCourseElementAssignmentRequest;
+use Itslearning\Requests\Organisation\CreateCourseElementFolderRequest;
+use Itslearning\Requests\Organisation\CreateCourseElementPageRequest;
+use Itslearning\Requests\Organisation\CreateCourseElementTestRequest;
 use Itslearning\Requests\Organisation\CreateCoursePlannerRequest;
 use Itslearning\Requests\Organisation\CreateExtensionInstanceRequest;
 use Itslearning\Requests\Organisation\CreateMyFilesFileRequest;
@@ -79,6 +87,66 @@ class Itslearning
         $client = $this->clientFactory->imses($this->credentials);
 
         $request = new CreateCourseRequest($course);
+
+        return $request->execute($client);
+    }
+
+    /**
+     * @link http://developer.itslearning.com/Create.Course.Element.Page.html
+     * @param CourseElementPage $courseElementPage
+     * @return CourseElementPage
+     */
+    public function createCourseElementPage(CourseElementPage $courseElementPage): CourseElementPage
+    {
+        $client = $this->clientFactory->organisationData($this->credentials);
+
+        $messageTypeIdentifier = $this->findMessageTypeIdentifierByName(CreateCourseElementPageRequest::CREATE_COURSE_ELEMENT_PAGE_MESSAGE_TYPE_NAME);
+        $request = new CreateCourseElementPageRequest($courseElementPage, $messageTypeIdentifier);
+
+        return $request->execute($client);
+    }
+
+    /**
+     * @link http://developer.itslearning.com/Create.Course.Element.Folder.html
+     * @param CourseElementFolder $courseElementFolder
+     * @return CourseElementFolder
+     */
+    public function createCourseElementFolder(CourseElementFolder $courseElementFolder): CourseElementFolder
+    {
+        $client = $this->clientFactory->organisationData($this->credentials);
+
+        $messageTypeIdentifier = $this->findMessageTypeIdentifierByName(CreateCourseElementFolderRequest::CREATE_COURSE_ELEMENT_FOLDER_MESSAGE_TYPE_NAME);
+        $request = new CreateCourseElementFolderRequest($courseElementFolder, $messageTypeIdentifier);
+
+        return $request->execute($client);
+    }
+
+    /**
+     * @link http://developer.itslearning.com/Create.Course.Element.Assignment.html
+     * @param CourseElementAssignment $courseElementAssignment
+     * @return CourseElementAssignment
+     */
+    public function createCourseElementAssignment(CourseElementAssignment $courseElementAssignment): CourseElementAssignment
+    {
+        $client = $this->clientFactory->organisationData($this->credentials);
+
+        $messageTypeIdentifier = $this->findMessageTypeIdentifierByName(CreateCourseElementAssignmentRequest::CREATE_COURSE_ELEMENT_ASSIGNMENT_MESSAGE_TYPE_NAME);
+        $request = new CreateCourseElementAssignmentRequest($courseElementAssignment, $messageTypeIdentifier);
+
+        return $request->execute($client);
+    }
+
+    /**
+     * @link http://developer.itslearning.com/Create.Course.Element.Test.html
+     * @param CourseElementTest $courseElementTest
+     * @return CourseElementTest
+     */
+    public function createCourseElementTest(CourseElementTest $courseElementTest): CourseElementTest
+    {
+        $client = $this->clientFactory->organisationData($this->credentials);
+
+        $messageTypeIdentifier = $this->findMessageTypeIdentifierByName(CreateCourseElementTestRequest::CREATE_COURSE_ELEMENT_TEST_MESSAGE_TYPE_NAME);
+        $request = new CreateCourseElementTestRequest($courseElementTest, $messageTypeIdentifier);
 
         return $request->execute($client);
     }
